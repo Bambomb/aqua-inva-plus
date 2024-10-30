@@ -9,7 +9,6 @@ class MainApp(ctk.CTk):
         super().__init__()
 
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+{-10}+{0}")
-        self.state("zoomed")
         self.title("Application pêche invasive")
 
 if __name__ == "__main__":
