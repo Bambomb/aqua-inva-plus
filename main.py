@@ -12,7 +12,7 @@ class MainApp(ctk.CTk):
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+{-10}+{0}")
         self.title("Application pêche invasive")
         
-        data = ["2","3"]
+        data = ["Mauve","Orange et bleu", "bleu"]
         self.searchWidget = SearchWidget(data, master=self)
 
 if __name__ == "__main__":
