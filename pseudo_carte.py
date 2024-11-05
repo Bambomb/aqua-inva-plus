@@ -184,6 +184,38 @@ class PseudoCarte(ctk.CTkFrame):
             print(f"Polygon {polygon_index} clicked is region {poly_id_to_reg[polygon_index]}")
             show_popup(polygon_index)
 
+class PseudoCarteReference:
+    """Crée une carte de la région de Québec pour obtenir les régions administratives à partir de coordonnées"""
+    def __init__(self):
+        self.real_polygons = []
+        self.poly_region = []
+        self.poly_id = []
+
+        with fiona.open("quebec_region_SHP/simplified_map.shp") as data:
+            for feature in data:
+                recent_poly = []
+
+                geom = shape(feature['geometry'])
+                if isinstance(geom, Polygon):
+                    exterior_coords = list(geom.exterior.coords)
+                    recent_poly.append(exterior_coords)
+                    self.poly_region.append(feature['properties']['RES_CO_REG'])
+                elif isinstance(geom, MultiPolygon):
+                    for poly in geom.geoms:
+                        exterior_coords = list(poly.exterior.coords)
+                        recent_poly.append(exterior_coords)
+                        self.poly_region.append(feature['properties']['RES_CO_REG'])
+
+                # créer les polygones
+                for poly in recent_poly:
+                    self.real_polygons.append(Polygon(poly))
+    def region_from_coords(self, x, y):
+        """Renvoie la région administrative et son nom à partir de coordonnées"""
+        for i, poly in enumerate(self.real_polygons):
+            if poly.contains(shapely.Point(x, y)):
+                region = self.poly_region[i]
+                return region,region_info[region]
+        return None
 
 def show_popup(poly_id):
     # Non permanent
@@ -199,9 +231,11 @@ def show_popup(poly_id):
 
 
 if __name__ == "__main__":
-    app = ctk.CTk()
-    app.geometry(f"{app.winfo_screenwidth()}x{app.winfo_screenheight()}+{0}+{0}")
-    app.title("Application pêche invasive")
-    carte = PseudoCarte(app)
-    carte.pack(expand=True, fill='both')
-    app.mainloop()
+    # app = ctk.CTk()
+    # app.geometry(f"{app.winfo_screenwidth()}x{app.winfo_screenheight()}+{0}+{0}")
+    # app.title("Application pêche invasive")
+    # carte = PseudoCarte(app)
+    # carte.pack(expand=True, fill='both')
+    # app.mainloop()
+    carte = PseudoCarteReference()
+    print(carte.region_from_coords(-65, 50))
