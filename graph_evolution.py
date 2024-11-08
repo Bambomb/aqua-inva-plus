@@ -5,7 +5,7 @@ from customtkinter import CTkFrame, CTkFont
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pandas.core.interchange.dataframe_protocol import DataFrame
 
-from pseudo_carte import region_info
+from quebec_info import region_info
 
 from fonction import getDistanceFromLatLonInKm
 import pandas as pd
@@ -44,8 +44,8 @@ class GraphEvolution(CTkFrame):
     def __init__(self, data: pd.DataFrame, center: tuple[float, float] = None, radius: float = None,
                  region_id: int = None, master=None):
         super().__init__(master)
-        self.frame = (CTkFrame(master))
-        self.frame.pack(fill="both", expand=1)
+        # self.frame = (CTkFrame(master))
+        # self.frame.pack(fill="both", expand=1)
 
         wanted_data = pd.DataFrame(columns=data.columns)
         if (center and radius is not None) and region_id is None:
@@ -84,7 +84,7 @@ class GraphEvolution(CTkFrame):
             else:
                 data[line] += 1
         if not data:
-            text = ctk.CTkLabel(self.frame, text="Aucune donnée à afficher pour cette région",font=CTkFont(size=20))
+            text = ctk.CTkLabel(self, text="Aucune donnée à afficher pour cette région",font=CTkFont(size=20))
             text.pack(expand=True)
             return
 
@@ -94,10 +94,9 @@ class GraphEvolution(CTkFrame):
         plt.legend([f"{key} : {value}" for key, value in data.items()], bbox_to_anchor=(1.15, 1), loc='upper left')
         plt.title('Nombre d\'observation des espèces dans la région sélectionnée')
 
-        self.canvas = FigureCanvasTkAgg(plt.gcf(), master=self.frame)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(fill="both", expand=1)
-        pass
+        canvas = FigureCanvasTkAgg(plt.gcf(), master=self)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill="both", expand=1)
 
 
 if __name__ == "__main__":

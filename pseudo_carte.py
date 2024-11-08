@@ -6,32 +6,14 @@ import fiona
 import shapely
 from shapely.geometry import shape, Polygon, MultiPolygon
 from fonction import map_range
+from graph_evolution import GraphEvolution
+from quebec_info import region_info
 
 color = ["blue", "red", "indigo", "yellow", "purple", "orange", "brown", "pink", "teal", "plum", "coral", "orchid",
          "lime", "skyblue", "navy", "darkgreen", "yellowgreen"]
 
 poly_id_to_reg = {0: 11, 1: 2, 2: 10, 3: 17, 4: 14, 5: 7, 6: 15, 7: 16, 8: 8, 9: 6, 10: 5, 11: 13, 12: 1, 13: 12, 14: 4,
                   15: 3, 16: 9, 17: 9, 18: 9}
-
-region_info = {
-    1: "Bas-Saint-Laurent",
-    2: "Saguenay-Lac-Saint-Jean",
-    3: "Capitale-Nationale",
-    4: "Mauricie",
-    5: "Estrie",
-    6: "Montréal",
-    7: "Outaouais",
-    8: "Abitibi-Témiscamingue",
-    9: "Côte-Nord",
-    10: "Nord-du-Québec",
-    11: "Gaspésie-Îles-de-la-Madeleine",
-    12: "Chaudière-Appalaches",
-    13: "Laval",
-    14: "Lanaudière",
-    15: "Laurentides",
-    16: "Montérégie",
-    17: "Centre-du-Québec"
-}
 
 
 class PseudoCarte(ctk.CTkFrame):
@@ -45,6 +27,8 @@ class PseudoCarte(ctk.CTkFrame):
     def __init__(self, data, master=None):
         super().__init__(master)
 
+        self.data = data
+        self.last_region=None
         self.canvas = ctk.CTkCanvas(self)
         self.canvas.pack(expand=True, fill='both')
 
@@ -182,7 +166,10 @@ class PseudoCarte(ctk.CTkFrame):
     def on_polygon_click(self, event, polygon_index):
         if not self.move_center:
             print(f"Polygon {polygon_index} clicked is region {poly_id_to_reg[polygon_index]}")
+            self.last_region = poly_id_to_reg[polygon_index]
             show_popup(polygon_index)
+    def get_last_region(self):
+        return self.last_region
 
 class PseudoCarteReference:
     """Crée une carte de la région de Québec pour obtenir les régions administratives à partir de coordonnées"""
@@ -221,9 +208,9 @@ def show_popup(poly_id):
     # Non permanent
     popup = tk.Toplevel()
     popup.title("Popup Window")
-    popup.geometry(f"300x200+{popup.winfo_screenwidth() // 2 - 150}+{popup.winfo_screenheight() // 2 - 100}")
+    popup.geometry(f"500x200+{popup.winfo_screenwidth() // 2 - 250}+{popup.winfo_screenheight() // 2 - 100}")
 
-    label = tk.Label(popup, text=f"Tu a cliqué sur la région administrative {poly_id_to_reg[poly_id]} \n Nom: {region_info[poly_id_to_reg[poly_id]]}")
+    label = tk.Label(popup, text=f"Tu a cliqué sur la région administrative {poly_id_to_reg[poly_id]} \n Nom: {region_info[poly_id_to_reg[poly_id]]}\n\nL'onglet graphique affiche maintenant les données de cette région", font=("Arial", 12))
     label.pack(pady=20)
 
     close_button = tk.Button(popup, text="Close", command=popup.destroy)
