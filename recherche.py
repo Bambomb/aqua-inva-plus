@@ -2,6 +2,8 @@
 
 import customtkinter as ctk
 import tkinter as tk
+
+#Classe principale 
 class SearchWidget(ctk.CTkFrame):
     def __init__(self, data, master=None):
         super().__init__(master)
@@ -86,6 +88,10 @@ class SearchWidget(ctk.CTkFrame):
         self.labelpage = ctk.CTkLabel(self.pagemenu, text = 1)
         self.labelpage.grid(row=0, column=1, sticky="n", padx=5)
 
+        #Label qui affiche infos supplémentaires
+        self.displaylabel = ctk.CTkLabel(self.master, text="Test")
+        self.displaylabel.grid(row=0, column=1, sticky="n", padx=5)
+
     #Fonction d'affichage des résultats
     def display(self, results):
         #Rafraîchissement
@@ -96,8 +102,8 @@ class SearchWidget(ctk.CTkFrame):
 
         #Crée un widget label pour chacun des résultats
         for i, result in enumerate(results):
-            self.label_collection.append(ctk.CTkLabel(self.resultats, text=result, fg_color="white", width=197))
-            self.label_collection[i].bind("<ButtonRelease-1>", lambda e, command=i:self.on_res_click(), add=True)
+            reslab = ResultLabel(smalltext=result, bigtext = self.data.loc[self.y][:].reset_index(), supermaster=self, master=self.resultats)
+            self.label_collection.append(reslab)
             self.label_collection[i].pack(expand=True,side=tk.TOP)
 
     #Fonction qui crée le frame des résultats
@@ -119,5 +125,20 @@ class SearchWidget(ctk.CTkFrame):
             self.nb_page +=1
             self.search(self.text, 1)
 
-    def on_res_click(self):
-        print("Cliqué")
+#Classe de un label résultat
+class ResultLabel(ctk.CTkLabel):
+    def __init__(self, smalltext, bigtext, supermaster, master=None):
+        super().__init__(master)
+        self.master = master
+        self.supermaster = supermaster
+        self.smalltext = smalltext
+        self.bigtext = bigtext
+
+        self.configure(text=smalltext, fg_color="white", width=197)
+        i=0
+        self.bind("<ButtonRelease-1>", lambda e, command=i:self.on_res_click(self.bigtext), add=True)
+
+    def on_res_click(self, line):
+        self.supermaster.displaylabel.configure(text=str(line))
+
+
