@@ -29,7 +29,7 @@ class SearchWidget(ctk.CTkFrame):
             self.nb_page = 1
             self.max = False
 
-        if(side>=0):
+        if(side>=0): #Si la recherche se fait en avant
             i = 0
             for column in self.datasearch[self.x:]:
                 j = 0
@@ -38,34 +38,14 @@ class SearchWidget(ctk.CTkFrame):
                     j+=1
                     if text.upper() in case.upper():
                         results.append(case)
-                        print("Len de results", len(results))
+                        print("x,y : ", self.x, ", ", self.y)
                         if(len(results)>=20):
-                            self.display(results)
                             self.x+=i
                             self.y+=j
+                            self.display(results)
                             return
                 i+=1
-                self.y=0
-
-            self.max = True      
-            self.display(results)
-
-        elif(side==-1):
-            i = 0
-            for column in self.datasearch[:self.x:-1]:
-                j = 0
-                for case in self.datasearch[column][:self.y:-1]:
-                    case = str(case)
-                    j+=1
-                    if text.upper() in case.upper():
-                        results.append(case)
-                        if(len(results)>=20):
-                            self.display(reversed(results))
-                            self.x-=i
-                            self.y-=j
-                            return
-                i+=1
-                self.y=0
+                #self.y=0
 
             self.max = True      
             self.display(results)
@@ -91,7 +71,7 @@ class SearchWidget(ctk.CTkFrame):
         self.pagemenu = ctk.CTkFrame(self)
         self.pagemenu.pack(side=tk.BOTTOM)
 
-        self.buttonleft = ctk.CTkButton(self.pagemenu, text="<-", command=self.gauche, width=30)
+        self.buttonleft = ctk.CTkButton(self.pagemenu, text="|<-", command=self.gauche, width=30)
         self.buttonleft.grid(row=0, column=0, sticky="n", padx=20)
 
         self.buttonright = ctk.CTkButton(self.pagemenu, text="->", command=self.droite, width=30)
@@ -120,16 +100,12 @@ class SearchWidget(ctk.CTkFrame):
     #Fonction event callback du bouton gauche
     def gauche(self):
         if(self.nb_page>1):
-            self.nb_page -=1
+            self.nb_page = 1
             self.max = False
-            self.search(self.text, -1)
+            self.search(self.text, 0)
 
     #Fonction event callback du bouton droite
     def droite(self):
         if(self.max==False):
             self.nb_page +=1
             self.search(self.text, 1)
-
-   
-
-    
