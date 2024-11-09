@@ -4,7 +4,7 @@ import customtkinter as ctk
 import tkinter as tk
 import fiona
 import shapely
-from shapely.geometry import shape, Polygon, MultiPolygon
+from shapely.geometry import shape, Polygon, MultiPolygon, Point
 from fonction import map_range
 
 color = ["blue", "red", "indigo", "yellow", "purple", "orange", "brown", "pink", "teal", "plum", "coral", "orchid",
@@ -55,9 +55,17 @@ class PseudoCarte(ctk.CTkFrame):
         self.simplified_map = []
         self.poly_id = []
 
+        # waypoint
+        grandeur = 30
+        circle = Point(0, -grandeur * 2.5).buffer(grandeur)
+        triangle = Polygon([(-grandeur / 2, -grandeur * 2), (grandeur / 2, -grandeur * 2), (0, 0)])
+        self.waypoint = circle.union(triangle)
+        self.waypoint_color = "red"
+        self.waypoint_pos = None
+
         # Les limites de la carte (pour le scaling)
         self.max_x = -56.934926885456164
-        self.min_x = -67.6669728073233
+        self.min_x = -79.76532426607646
         self.max_y = 62.58246570128598
         self.min_y = 44.99135832579372
 
@@ -135,9 +143,9 @@ class PseudoCarte(ctk.CTkFrame):
         self.scale = min(scale_x, scale_y) * 0.8  # Marge de bordure
         self.min_scale = self.scale
         self.max_scale = 1120
-        self.offset_x = (self.canvas.winfo_width() - (self.max_x - self.min_x) * self.scale) / 2 + (
-                self.max_x - self.min_x) * self.scale / 1.5
-        self.offset_y = (self.canvas.winfo_height() - (self.max_y - self.min_y) * self.scale) / 2
+        self.offset_x = (self.canvas.winfo_width() / 2) - (self.max_x - self.min_x) * (
+                    self.scale - (self.scale / 100 * 35)) / 2
+        self.offset_y = (self.canvas.winfo_height() / 2) - (self.max_y - self.min_y) * self.scale / 2
         self.draw()
 
     def save_simple_map(self):
@@ -179,43 +187,32 @@ class PseudoCarte(ctk.CTkFrame):
             self.canvas.tag_bind(polygon_id, "<ButtonRelease-1>",
                                  lambda event, num=i: self.on_polygon_click(event, num))
 
+        if self.waypoint_pos:
+            points = []
+            x, y = self.waypoint_pos
+            x = (x - self.min_x) * (self.scale - (self.scale / 100 * 35)) + self.offset_x
+            y = (self.max_y - y) * self.scale + self.offset_y
+            for point in self.waypoint.exterior.coords:
+                px, py = point
+                px += x
+                py += y
+                points.append((px, py))
+
+            self.canvas.create_polygon(points, fill=self.waypoint_color, outline="white", width=5)
+            self.canvas.create_polygon(points, fill=self.waypoint_color, outline="black", width=2)
+
     def on_polygon_click(self, event, polygon_index):
         if not self.move_center:
             print(f"Polygon {polygon_index} clicked is region {poly_id_to_reg[polygon_index]}")
             show_popup(polygon_index)
 
-class PseudoCarteReference:
-    """Crée une carte de la région de Québec pour obtenir les régions administratives à partir de coordonnées"""
-    def __init__(self):
-        self.real_polygons = []
-        self.poly_region = []
-        self.poly_id = []
+    def set_waypoint(self, lat, lon):
+        self.waypoint_pos = (lon, lat)
+        self.draw()
 
-        with fiona.open("quebec_region_SHP/simplified_map.shp") as data:
-            for feature in data:
-                recent_poly = []
-
-                geom = shape(feature['geometry'])
-                if isinstance(geom, Polygon):
-                    exterior_coords = list(geom.exterior.coords)
-                    recent_poly.append(exterior_coords)
-                    self.poly_region.append(feature['properties']['RES_CO_REG'])
-                elif isinstance(geom, MultiPolygon):
-                    for poly in geom.geoms:
-                        exterior_coords = list(poly.exterior.coords)
-                        recent_poly.append(exterior_coords)
-                        self.poly_region.append(feature['properties']['RES_CO_REG'])
-
-                # créer les polygones
-                for poly in recent_poly:
-                    self.real_polygons.append(Polygon(poly))
-    def region_from_coords(self, x, y):
-        """Renvoie la région administrative et son nom à partir de coordonnées"""
-        for i, poly in enumerate(self.real_polygons):
-            if poly.contains(shapely.Point(x, y)):
-                region = self.poly_region[i]
-                return region,region_info[region]
-        return None
+    def del_waypoint(self):
+        self.waypoint_pos = None
+        self.draw()
 
 def show_popup(poly_id):
     # Non permanent
@@ -223,7 +220,8 @@ def show_popup(poly_id):
     popup.title("Popup Window")
     popup.geometry(f"300x200+{popup.winfo_screenwidth() // 2 - 150}+{popup.winfo_screenheight() // 2 - 100}")
 
-    label = tk.Label(popup, text=f"Tu a cliqué sur la région administrative {poly_id_to_reg[poly_id]} \n Nom: {region_info[poly_id_to_reg[poly_id]]}")
+    label = tk.Label(popup,
+                     text=f"Tu a cliqué sur la région administrative {poly_id_to_reg[poly_id]} \n Nom: {region_info[poly_id_to_reg[poly_id]]}")
     label.pack(pady=20)
 
     close_button = tk.Button(popup, text="Close", command=popup.destroy)
@@ -231,11 +229,10 @@ def show_popup(poly_id):
 
 
 if __name__ == "__main__":
-    # app = ctk.CTk()
-    # app.geometry(f"{app.winfo_screenwidth()}x{app.winfo_screenheight()}+{0}+{0}")
-    # app.title("Application pêche invasive")
-    # carte = PseudoCarte(app)
-    # carte.pack(expand=True, fill='both')
-    # app.mainloop()
-    carte = PseudoCarteReference()
-    print(carte.region_from_coords(-65, 50))
+    app = ctk.CTk()
+    app.geometry(f"{app.winfo_screenwidth()}x{app.winfo_screenheight()}+{0}+{0}")
+    app.title("Application pêche invasive")
+    carte = PseudoCarte(app)
+    carte.pack(expand=True, fill='both')
+    carte.set_waypoint(45.439334, -73.806329)
+    app.mainloop()
