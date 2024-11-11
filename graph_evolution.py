@@ -5,7 +5,7 @@ from customtkinter import CTkFrame, CTkFont
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pandas.core.interchange.dataframe_protocol import DataFrame
 
-from pseudo_carte import region_info
+from quebec_info import region_info
 
 from fonction import getDistanceFromLatLonInKm
 import pandas as pd
