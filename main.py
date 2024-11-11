@@ -9,6 +9,7 @@ from PIL.ImageOps import expand
 from recherche import SearchWidget
 from dataframe import create_dataframe
 from pseudo_carte import PseudoCarte
+from ajout_observation import addObsWidget
 
 class MainApp(ctk.CTk):
 
@@ -28,6 +29,8 @@ class MainApp(ctk.CTk):
         search_widget = SearchWidget(self.data, master=self)
         search_widget.grid(row=0, column=0, padx=10, sticky="nsew")
         self.carte.grid(row=0, column=1, padx=10, sticky="nsew")
+        self.addObs = addObsWidget(master=self)
+        self.addObs.grid(row=0, column=2, padx=10, sticky="nsew")
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=5)
