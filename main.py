@@ -6,7 +6,6 @@ import tkinter as tk
 
 from PIL.ImageOps import expand
 
-from graph_evolution import GraphEvolution
 from recherche import SearchWidget
 from dataframe import create_dataframe
 from pseudo_carte import PseudoCarte
@@ -16,8 +15,8 @@ class MainApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.data = create_dataframe("BD_EAE_faunique_Quebec.csv")
-        self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+{-10}+{0}")
-        self.title("Application pêche invasive")
+        self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()-75}+{-10}+{0}")
+        self.title("Aqua-Inva")
         self.carte = PseudoCarte(data=self.data, master=self)
         self.graph = None
         self.create_menu()
@@ -59,7 +58,7 @@ class MainApp(ctk.CTk):
 
     def clear_main_frame(self):
         for widget in self.winfo_children():
-            if  isinstance(widget, PseudoCarte   ):
+            if  isinstance(widget, PseudoCarte):
                 widget.grid_remove()
             else:
                 widget.destroy()

@@ -20,6 +20,7 @@ class SearchWidget(ctk.CTkFrame):
         self.max = False
         self.nb_page = 1
         self.configure(height=self.master.winfo_screenheight()-200)
+        self.configure(width=5)
         self.create_widgets()
 
     #Fonction qui recherche dans le dataframe
@@ -46,7 +47,6 @@ class SearchWidget(ctk.CTkFrame):
                         if(len(results)>=20): #Limite à 20 résultats
                             self.x+=j
                             self.y+=i
-                            print("x :", self.x, ", j :", j, ", y :", self.y, ", i :", i)
                             self.display(results)
                             return
 
@@ -90,7 +90,7 @@ class SearchWidget(ctk.CTkFrame):
         self.labelpage.grid(row=0, column=1, sticky="n", padx=5)
 
         #Label qui affiche infos supplémentaires
-        self.displaylabel = ctk.CTkLabel(self.master, text="Test")
+        self.displaylabel = ctk.CTkLabel(self.master, text="")
         self.displaylabel.grid(row=0, column=1, sticky="n", padx=5)
 
     #Fonction d'affichage des résultats
