@@ -212,7 +212,7 @@ class PseudoCarte(ctk.CTkFrame):
             if region:
                 if self.click_var.get() == "Region":
                     self.graph = partial(GraphEvolution, data=self.data, region_id=region)
-                elif self.click_var == "Rayon":
+                elif self.click_var.get() == "Rayon":
                     self.graph_by_radius()
 
     def graph_by_radius(self):

@@ -48,11 +48,11 @@ class GraphEvolution(CTkFrame):
         # self.frame.pack(fill="both", expand=1)
 
         wanted_data = pd.DataFrame(columns=data.columns)
-        if (center and radius is not None) and region_id is None:
+        if ((center and radius) is not None) and region_id is None:
             x, y = center
             for i in range(0, data.shape[0]):
                 element = data.iloc[i]
-                lon, lat = element["latitude"], element["longitude"]
+                lon, lat = element["longitude"], element["latitude"]
                 if getDistanceFromLatLonInKm(x, y, lon, lat) <= radius:
                     if wanted_data.empty:
                         wanted_data = data.iloc[[i]]

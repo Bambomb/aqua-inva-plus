@@ -1,4 +1,5 @@
 # main.py
+import inspect
 
 import customtkinter as ctk
 import tkinter as tk
@@ -35,15 +36,15 @@ class MainApp(ctk.CTk):
 
     def show_graph(self):
         self.clear_main_frame()
-        region = self.carte.get_last_region()
-        if not region:
+        graph_func = self.carte.get_graph_function()
+        if not graph_func:
             label = ctk.CTkLabel(self, text="Aucune donnée n'a été sélectionnée", font=ctk.CTkFont(size=20))
             label.grid(row=0, column=1, padx=10, sticky="nsew")
             self.columnconfigure(0, weight=1)
             self.columnconfigure(1, weight=1)
             self.columnconfigure(2, weight=1)
             return
-        graph = GraphEvolution(data=self.data, region_id=region, master=self)
+        graph = graph_func(master=self)
         graph.grid(row=0, column=0, padx=10, sticky="nsew")
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=0)
