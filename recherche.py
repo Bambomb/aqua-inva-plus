@@ -98,10 +98,12 @@ class SearchWidget(ctk.CTkFrame):
         #Rafraîchissement
         self.master.carte.del_waypoint()
         self.resultats.destroy()
-        if(self.max==False):self.labelpage.configure(text=self.nb_page)
+        if(self.max==False):
+            self.labelpage.configure(text=self.nb_page)
+            self.buttonright.configure(state=tk.ACTIVE)
         else: 
             self.labelpage.configure(text="Max")
-            self.buttonright['state']=(tk.DISABLED)
+            self.buttonright.configure(state=tk.DISABLED)
 
         self.label_collection=[]
         self.frame()
