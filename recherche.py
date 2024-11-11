@@ -35,7 +35,7 @@ class SearchWidget(ctk.CTkFrame):
         if(side>=0): #Si la recherche se fait en avant
             i = 0
             #self.y=0
-            for line in self.datasearch[self.x:]: #Parcoure chaque colonne du dataframe
+            for line in self.datasearch[self.y:]: #Parcoure chaque colonne du dataframe
                 i+=1
                 j = 0
                 for case in line: #Parcoure chaque case de la colonne
@@ -46,6 +46,7 @@ class SearchWidget(ctk.CTkFrame):
                         if(len(results)>=20): #Limite à 20 résultats
                             self.x+=j
                             self.y+=i
+                            print("x :", self.x, ", j :", j, ", y :", self.y, ", i :", i)
                             self.display(results)
                             return
 
