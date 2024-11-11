@@ -2,6 +2,7 @@
 
 import customtkinter as ctk
 import tkinter as tk
+import numpy
 
 #Classe principale 
 class SearchWidget(ctk.CTkFrame):
@@ -11,8 +12,7 @@ class SearchWidget(ctk.CTkFrame):
 
         self.content = tk.StringVar()
         self.content.trace("w", lambda name, index,mode, var=self.content: self.changed(var))
-        self.data = data
-        self.datasearch = self.data.drop(columns=['latitude','longitude','groupe'])
+        self.datasearch = data.drop(columns='groupe').to_numpy()
         self.label_collection = []
         self.text = ""
         self.x = 0
@@ -34,22 +34,22 @@ class SearchWidget(ctk.CTkFrame):
 
         if(side>=0): #Si la recherche se fait en avant
             i = 0
-            for column in self.datasearch[self.x:]: #Parcoure chaque colonne du dataframe
+            #self.y=0
+            for line in self.datasearch[self.x:]: #Parcoure chaque colonne du dataframe
+                i+=1
                 j = 0
-                for case in self.datasearch[column][self.y:]: #Parcoure chaque case de la colonne
+                for case in line: #Parcoure chaque case de la colonne
                     case = str(case) #Transforme en string pour le upper()
                     j+=1
                     if text.upper() in case.upper(): #Si la recherche se trouve dans la case
-                        results.append(case)
+                        results.append(line)
                         if(len(results)>=20): #Limite à 20 résultats
-                            self.x+=i
-                            self.y+=j
+                            self.x+=j
+                            self.y+=i
                             self.display(results)
                             return
-                i+=1
-                #self.y=0
 
-            self.max = True      
+            self.max = True     
             self.display(results)
 
     #Fonction event callback du widget entry qui réagit quand le texte change
@@ -96,13 +96,21 @@ class SearchWidget(ctk.CTkFrame):
     def display(self, results):
         #Rafraîchissement
         self.resultats.destroy()
-        self.labelpage.configure(text=self.nb_page)
+        if(self.max==False):self.labelpage.configure(text=self.nb_page)
+        else: 
+            self.labelpage.configure(text="Max")
+            self.buttonright['state']=(tk.DISABLED)
+
         self.label_collection=[]
         self.frame()
 
         #Crée un widget label pour chacun des résultats
+        index = 0
         for i, result in enumerate(results):
-            reslab = ResultLabel(smalltext=result, bigtext = self.data.loc[self.y][:].reset_index(), supermaster=self, master=self.resultats)
+            for j, case in enumerate(result):
+                 if str(self.text).upper() in str(case).upper():
+                     index = j
+            reslab = ResultLabel(smalltext=result[index], bigtext = result, supermaster=self, master=self.resultats)
             self.label_collection.append(reslab)
             self.label_collection[i].pack(expand=True,side=tk.TOP)
 
@@ -136,7 +144,7 @@ class ResultLabel(ctk.CTkLabel):
 
         self.configure(text=smalltext, fg_color="white", width=197)
         i=0
-        self.bind("<ButtonRelease-1>", lambda e, command=i:self.on_res_click(self.bigtext), add=True)
+        self.bind("<ButtonRelease-1>", command=lambda event:self.on_res_click(self.bigtext))
 
     def on_res_click(self, line):
         self.supermaster.displaylabel.configure(text=str(line))
