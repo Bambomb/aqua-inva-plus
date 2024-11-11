@@ -96,6 +96,7 @@ class SearchWidget(ctk.CTkFrame):
     #Fonction d'affichage des résultats
     def display(self, results):
         #Rafraîchissement
+        self.master.carte.del_waypoint()
         self.resultats.destroy()
         if(self.max==False):self.labelpage.configure(text=self.nb_page)
         else: 
@@ -149,5 +150,6 @@ class ResultLabel(ctk.CTkLabel):
 
     def on_res_click(self, line):
         self.supermaster.displaylabel.configure(text=str(line))
+        self.supermaster.master.carte.set_waypoint(line[4],line[3])
 
 
