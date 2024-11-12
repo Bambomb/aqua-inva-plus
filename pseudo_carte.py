@@ -8,7 +8,6 @@ import shapely
 from shapely.geometry import shape, Polygon, MultiPolygon, Point
 from functools import partial
 
-from dataframe import create_dataframe
 from graph_evolution import GraphEvolution
 from quebec_info import region_info
 
@@ -52,7 +51,7 @@ class PseudoCarte(ctk.CTkFrame):
 
         # Les limites de la carte (pour le scaling)
         self.max_x = -56.934926885456164
-        self.min_x = -67.6669728073233
+        self.min_x = -79.76532426607646
         self.max_y = 62.58246570128598
         self.min_y = 44.99135832579372
 
@@ -65,16 +64,20 @@ class PseudoCarte(ctk.CTkFrame):
         self.move_center = ()
 
         # type de clic (region/rayon)
-        self.click_frame = ctk.CTkFrame(self, fg_color=None)
-        self.click_frame.place(x=170, y=40, anchor='c')
-        self.click_var = tk.StringVar(value="Region")
+        self.click_frame = ctk.CTkFrame(self, fg_color="white",border_color="black",border_width=2)
+        self.click_frame.place(x=170, y=90, anchor='c')
+        self.click_var = tk.StringVar(value="Info")
+        self.click_info = ctk.CTkRadioButton(self.click_frame, text="Information par région", variable=self.click_var, value="Info",text_color="black")
+        self.click_info.grid(row=0, column=0, sticky='ew', padx=5,pady=5)
+        self.click_label = ctk.CTkLabel(self.click_frame, text="Type de clic pour le graphique", font=ctk.CTkFont(size=12),text_color="black")
+        self.click_label.grid(row=1, column=0, sticky='w', padx=5,pady=5)
         self.click_region = ctk.CTkRadioButton(self.click_frame, text="Par region", variable=self.click_var,
-                                               value="Region")
-        self.click_region.grid(row=0, column=0, sticky='ew')
-        self.click_frame_rayon = ctk.CTkFrame(self.click_frame, fg_color=None)
-        self.click_frame_rayon.grid(row=1, column=0, sticky='ew')
+                                               value="Region",text_color="black")
+        self.click_region.grid(row=2, column=0, sticky='ew',padx=5,pady=5)
+        self.click_frame_rayon = ctk.CTkFrame(self.click_frame, fg_color="white")
+        self.click_frame_rayon.grid(row=3, column=0, sticky='ew', padx=5,pady=5)
         self.click_rayon = ctk.CTkRadioButton(self.click_frame_rayon, text="Par rayon (km)", variable=self.click_var,
-                                              value="Rayon")
+                                              value="Rayon",text_color="black")
         self.click_rayon.grid(row=0, column=0, sticky='nsew')
         self.click_rayon_radius = tk.IntVar(value=1)
         self.click_rayon_size = tk.Scale(self.click_frame_rayon, from_=1, to=200, orient=HORIZONTAL,
@@ -147,7 +150,7 @@ class PseudoCarte(ctk.CTkFrame):
         self.scale = min(scale_x, scale_y) * 0.8  # Marge de bordure
         self.min_scale = self.scale
         self.max_scale = 1120
-        self.offset_x = (self.canvas.winfo_width() - (self.max_x - self.min_x) * self.scale * 0.35) / 2
+        self.offset_x = (self.canvas.winfo_width() - (self.max_x - self.min_x) * (self.scale-(self.scale*0.35))) / 2
         self.offset_y = (self.canvas.winfo_height() - (self.max_y - self.min_y) * self.scale) / 2
         self.draw()
 
@@ -207,17 +210,25 @@ class PseudoCarte(ctk.CTkFrame):
 
     def on_polygon_click(self, event):
         if not self.move_center:
-            region, info = self.region_from_coords(self.screen_pos_to_lat_lon(event.x, event.y))
-            show_popup(region)
+            region, info = self.region_from_coords(self.screen_pos_to_lon_lat(event.x, event.y))
             if region:
+                if self.click_var.get() == "Info":
+                    show_popup(region)
+                    return
+                label = ctk.CTkLabel(self, text="Chargement...", font=ctk.CTkFont(size=20))
+                label.place(x=self.canvas.winfo_width() / 2, y=self.canvas.winfo_height() / 2, anchor='center')
                 if self.click_var.get() == "Region":
+                    self.canvas.update()
                     self.graph = partial(GraphEvolution, data=self.data, region_id=region)
                 elif self.click_var.get() == "Rayon":
-                    self.graph_by_radius()
+                    self.canvas.update()
+                    self.graph_by_radius(event)
+                self.master.show_graph()
+                label.destroy()
 
-    def graph_by_radius(self):
-        x, y = self.canvas.winfo_pointerx(), self.canvas.winfo_pointery()
-        x, y = self.screen_pos_to_lat_lon(x, y)
+    def graph_by_radius(self,event):
+        x, y = event.x,event.y
+        x, y = self.screen_pos_to_lon_lat(x, y)
         self.graph = partial(GraphEvolution, data=self.data, center=(x, y), radius=self.click_rayon_radius.get())
 
     def set_waypoint(self, lon, lat):
@@ -228,16 +239,16 @@ class PseudoCarte(ctk.CTkFrame):
         self.waypoint_pos = None
         self.draw()
 
-    def screen_pos_to_lat_lon(self, x, y):
+    def screen_pos_to_lon_lat(self, x, y):
         lon = ((x - self.offset_x) / (self.scale - (self.scale * 0.35))) + self.min_x
         lat = -(((y - self.offset_y) / self.scale) - self.max_y)
         return lon, lat
 
     def region_from_coords(self, coords):
         """Renvoie la région administrative et son nom à partir de coordonnées"""
-        x, y = coords
+        x,y = coords
         for i, poly in enumerate(self.real_polygons):
-            if poly.contains(shapely.Point(x, y)):
+            if poly.contains(shapely.Point(x,y)):
                 region = self.poly_region[i]
                 return region, region_info[region]
         return None
@@ -247,26 +258,19 @@ class PseudoCarte(ctk.CTkFrame):
 
 
 def show_popup(poly_region):
-    # Non permanent
     popup = tk.Toplevel()
-    popup.title("Popup Window")
-    popup.geometry(f"500x200+{popup.winfo_screenwidth() // 2 - 250}+{popup.winfo_screenheight() // 2 - 100}")
+    popup.title("Information région")
+    popup.geometry(f"500x200+{popup.winfo_screenwidth() // 2 - 100}+{popup.winfo_screenheight() // 2 - 100}")
+
+    title = tk.Label(popup,
+                     text = f"{region_info[poly_region]}",
+                     font = ("Arial", 20))
+    title.pack(pady=20,side='top')
 
     label = tk.Label(popup,
-                     text=f"Tu a cliqué sur la région administrative {poly_region} \n Nom: {region_info[poly_region]}\n\nL'onglet graphique affiche maintenant les données de cette région",
+                     text=f"Tu as cliqué sur la région administrative #{poly_region}",
                      font=("Arial", 12))
-    label.pack(pady=20)
+    label.pack(pady=20,side='top')
 
     close_button = tk.Button(popup, text="Close", command=popup.destroy)
     close_button.pack(pady=10)
-
-
-if __name__ == "__main__":
-    app = ctk.CTk()
-    app.geometry(f"{app.winfo_screenwidth()}x{app.winfo_screenheight()}+{0}+{0}")
-    app.title("Application pêche invasive")
-    datas = create_dataframe("BD_EAE_faunique_Quebec.csv")
-    carte = PseudoCarte(data=datas, master=app)
-    carte.pack(expand=True, fill='both')
-    carte.set_waypoint(-73.806329, 45.439334, )
-    app.mainloop()
