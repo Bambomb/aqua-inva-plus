@@ -63,8 +63,12 @@ class SearchWidget(ctk.CTkFrame):
 
     #Création des widgets
     def create_widgets(self):
-        self.grid(row=0, column=0, padx=20, pady=20, sticky="n")
+        self.grid(row=0, column=0, padx=20, pady=5, sticky="n")
         self.pack_propagate(0)
+        
+        #Label recherche
+        self.uplabel = ctk.CTkLabel(self, text = "Rechercher :                    ")
+        self.uplabel.pack(side=tk.TOP)
 
         #Entry du champ de recherche
         self.champ = ctk.CTkEntry(self, placeholder_text="Rechercher", textvariable=self.content)
@@ -90,7 +94,7 @@ class SearchWidget(ctk.CTkFrame):
         self.labelpage.grid(row=0, column=1, sticky="n", padx=5)
 
         #Label qui affiche infos supplémentaires
-        self.displaylabel = ctk.CTkLabel(self.master, text="")
+        self.displaylabel = ctk.CTkLabel(self.master, text=None, compound="left", justify="left", anchor="w", bg_color="transparent")
         self.displaylabel.grid(row=0, column=1, sticky="n", padx=5)
 
     #Fonction d'affichage des résultats
@@ -120,7 +124,7 @@ class SearchWidget(ctk.CTkFrame):
 
     #Fonction qui crée le frame des résultats
     def frame(self):
-        self.resultats = ctk.CTkFrame(self, width=200, height=1000, border_width=2, border_color="black")
+        self.resultats = ctk.CTkFrame(self, width=280, height=1000, border_width=2, border_color="black")
         self.resultats.pack_propagate(0)
         self.resultats.pack(expand=1,fill="both")
 
@@ -137,9 +141,20 @@ class SearchWidget(ctk.CTkFrame):
             self.nb_page +=1
             self.search(self.text, 1)
 
-    #
+    #Fonction qui rafraîchit le dataframe
     def reloadData(self):
         self.datasearch = self.master.data.drop(columns=['habitat','groupe','type_observation']).to_numpy()
+
+    def displayresult(self, line):
+        tab = ""
+        tab += "Date :"+ line[0]+ "\n"
+        tab += "Plan d'eau :"+ line[1]+ "\n"
+        tab += "Région :"+ line[2]+ "\n"
+        tab += "Latitude :"+ line[3]+ ", Longitude :"+ line[4]+"\n"
+        tab += "Nom latin : "+ line[5]+ "\n"
+        tab += "Espèce : "+ line[6]+ "\n"
+
+        self.displaylabel.configure(text=tab)
 
 #Classe de un label résultat
 class ResultLabel(ctk.CTkLabel):
@@ -155,7 +170,7 @@ class ResultLabel(ctk.CTkLabel):
         self.bind("<ButtonRelease-1>", command=lambda event:self.on_res_click(self.bigtext))
 
     def on_res_click(self, line):
-        self.supermaster.displaylabel.configure(text=str(line))
+        self.supermaster.displayresult(line)
         try:line4=float(line[4])
         except Exception as e:
             self.supermaster.master.carte.del_waypoint()
