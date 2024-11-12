@@ -12,7 +12,7 @@ class SearchWidget(ctk.CTkFrame):
 
         self.content = tk.StringVar()
         self.content.trace("w", lambda name, index,mode, var=self.content: self.changed(var))
-        self.datasearch = data.drop(columns='groupe').to_numpy()
+        self.datasearch = data.drop(columns=['habitat','groupe','type_observation'], errors='ignore').to_numpy()
         self.label_collection = []
         self.text = ""
         self.x = 0
@@ -137,6 +137,10 @@ class SearchWidget(ctk.CTkFrame):
             self.nb_page +=1
             self.search(self.text, 1)
 
+    #
+    def reloadData(self):
+        self.datasearch = self.master.data.drop(columns=['habitat','groupe','type_observation']).to_numpy()
+
 #Classe de un label résultat
 class ResultLabel(ctk.CTkLabel):
     def __init__(self, smalltext, bigtext, supermaster, master=None):
@@ -152,6 +156,8 @@ class ResultLabel(ctk.CTkLabel):
 
     def on_res_click(self, line):
         self.supermaster.displaylabel.configure(text=str(line))
+        try:line4=float(line[4])
+        except Exception as e:
+            self.supermaster.master.carte.del_waypoint()
+            return
         self.supermaster.master.carte.set_waypoint(line[4],line[3])
-
-

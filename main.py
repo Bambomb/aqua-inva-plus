@@ -9,12 +9,13 @@ from PIL.ImageOps import expand
 from recherche import SearchWidget
 from dataframe import create_dataframe
 from pseudo_carte import PseudoCarte
+from ajout_observation import addObsWidget
 
 class MainApp(ctk.CTk):
 
     def __init__(self):
         super().__init__()
-        self.data = create_dataframe("BD_EAE_faunique_Quebec.csv")
+        self.data = create_dataframe("BD_EAE_faunique_Quebec.sss")
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()-75}+{-10}+{0}")
         self.title("Aqua-Inva")
         self.carte = PseudoCarte(data=self.data, master=self)
@@ -25,9 +26,11 @@ class MainApp(ctk.CTk):
 
     def show_accueil(self):
         self.clear_main_frame()
-        search_widget = SearchWidget(self.data, master=self)
-        search_widget.grid(row=0, column=0, padx=10, sticky="nsew")
+        self.search_widget = SearchWidget(self.data, master=self)
+        self.search_widget.grid(row=0, column=0, padx=10, sticky="nsew")
         self.carte.grid(row=0, column=1, padx=10, sticky="nsew")
+        self.addObs = addObsWidget(master=self)
+        self.addObs.place(x=1450, y=60, anchor='ne')
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=5)
@@ -63,7 +66,6 @@ class MainApp(ctk.CTk):
             else:
                 widget.destroy()
         self.create_menu()
-
 
 if __name__ == "__main__":
     app = MainApp()
