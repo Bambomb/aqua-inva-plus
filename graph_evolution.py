@@ -44,15 +44,15 @@ class GraphEvolution(CTkFrame):
     def __init__(self, data: pd.DataFrame, center: tuple[float, float] = None, radius: float = None,
                  region_id: int = None, master=None):
         super().__init__(master)
-        self.frame = (CTkFrame(master))
-        self.frame.pack(fill="both", expand=1)
+        # self.frame = (CTkFrame(master))
+        # self.frame.pack(fill="both", expand=1)
 
         wanted_data = pd.DataFrame(columns=data.columns)
-        if (center and radius is not None) and region_id is None:
+        if ((center and radius) is not None) and region_id is None:
             x, y = center
             for i in range(0, data.shape[0]):
                 element = data.iloc[i]
-                lon, lat = element["latitude"], element["longitude"]
+                lon, lat = element["longitude"], element["latitude"]
                 if getDistanceFromLatLonInKm(x, y, lon, lat) <= radius:
                     if wanted_data.empty:
                         wanted_data = data.iloc[[i]]
@@ -74,7 +74,6 @@ class GraphEvolution(CTkFrame):
         self.create_graph()
 
     def create_graph(self):
-        print("Graph created")
         plt.figure(figsize=(5, 4))
 
         data = {}
@@ -84,7 +83,7 @@ class GraphEvolution(CTkFrame):
             else:
                 data[line] += 1
         if not data:
-            text = ctk.CTkLabel(self.frame, text="Aucune donnée à afficher pour cette région",font=CTkFont(size=20))
+            text = ctk.CTkLabel(self, text="Aucune donnée à afficher pour cette région",font=CTkFont(size=20))
             text.pack(expand=True)
             return
 
@@ -94,10 +93,9 @@ class GraphEvolution(CTkFrame):
         plt.legend([f"{key} : {value}" for key, value in data.items()], bbox_to_anchor=(1.15, 1), loc='upper left')
         plt.title('Nombre d\'observation des espèces dans la région sélectionnée')
 
-        self.canvas = FigureCanvasTkAgg(plt.gcf(), master=self.frame)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(fill="both", expand=1)
-        pass
+        canvas = FigureCanvasTkAgg(plt.gcf(), master=self)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill="both", expand=1)
 
 
 if __name__ == "__main__":

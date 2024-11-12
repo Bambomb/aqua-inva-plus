@@ -64,7 +64,7 @@ class PseudoCarte(ctk.CTkFrame):
         self.offset_y = 0
         self.move_center = ()
 
-        # type de clique (region/rayon)
+        # type de clic (region/rayon)
         self.click_frame = ctk.CTkFrame(self, fg_color=None)
         self.click_frame.place(x=170, y=40, anchor='c')
         self.click_var = tk.StringVar(value="Region")
@@ -155,7 +155,7 @@ class PseudoCarte(ctk.CTkFrame):
         """Sauvegarde une version simplifiée de la carte"""
         self.simplified_map = []
         for i, poly in enumerate(self.real_polygons):
-            self.simplified_map.append(poly.simplify(0.005))
+            self.simplified_map.append(poly.simplify(0.001))
 
     def on_scroll(self, event):
         scale_facteur = 1.1 if event.delta > 0 else 0.9
@@ -212,7 +212,7 @@ class PseudoCarte(ctk.CTkFrame):
             if region:
                 if self.click_var.get() == "Region":
                     self.graph = partial(GraphEvolution, data=self.data, region_id=region)
-                elif self.click_var == "Rayon":
+                elif self.click_var.get() == "Rayon":
                     self.graph_by_radius()
 
     def graph_by_radius(self):
