@@ -64,7 +64,7 @@ class PseudoCarte(ctk.CTkFrame):
         self.offset_y = 0
         self.move_center = ()
 
-        # type de clique (region/rayon)
+        # type de clic (region/rayon)
         self.click_frame = ctk.CTkFrame(self, fg_color=None)
         self.click_frame.place(x=170, y=40, anchor='c')
         self.click_var = tk.StringVar(value="Region")

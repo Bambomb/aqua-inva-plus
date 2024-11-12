@@ -74,7 +74,6 @@ class GraphEvolution(CTkFrame):
         self.create_graph()
 
     def create_graph(self):
-        print("Graph created")
         plt.figure(figsize=(5, 4))
 
         data = {}
