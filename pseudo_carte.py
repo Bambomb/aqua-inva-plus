@@ -64,7 +64,12 @@ class PseudoCarte(ctk.CTkFrame):
         self.offset_y = 0
         self.move_center = ()
 
-        # type de clique (region/rayon)
+        # Position du clic
+        self.x = "Non précisé"
+        self.y = "Non précisé"
+        self.region = "Inconnue"
+
+        # type de clic (region/rayon)
         self.click_frame = ctk.CTkFrame(self, fg_color=None)
         self.click_frame.place(x=170, y=40, anchor='c')
         self.click_var = tk.StringVar(value="Region")
@@ -192,12 +197,12 @@ class PseudoCarte(ctk.CTkFrame):
         if self.waypoint_pos:
             points = []
             x, y = self.waypoint_pos
-            x = (x - self.min_x) * (self.scale - (self.scale * 0.35)) + self.offset_x
-            y = (self.max_y - y) * self.scale + self.offset_y
+            x = (float(x) - self.min_x) * (self.scale - (self.scale * 0.35)) + self.offset_x
+            y = (self.max_y - float(y)) * self.scale + self.offset_y
             for point in self.waypoint.exterior.coords:
                 px, py = point
-                px += x
-                py += y
+                px += float(x)
+                py += float(y)
                 points.append((px, py))
 
             ids = self.canvas.create_polygon(points, fill=self.waypoint_color, outline="white", width=5)
@@ -207,11 +212,12 @@ class PseudoCarte(ctk.CTkFrame):
 
     def on_polygon_click(self, event):
         if not self.move_center:
-            region, info = self.region_from_coords(self.screen_pos_to_lat_lon(event.x, event.y))
+            self.x, self.y = self.screen_pos_to_lat_lon(event.x, event.y)
+            region, self.region = self.region_from_coords(coords=(self.x, self.y))
             show_popup(region)
             if region:
                 if self.click_var.get() == "Region":
-                    self.graph = partial(GraphEvolution, data=self.data, region_id=region)
+                    self.graph = partial(GraphEvolution, data=self.data, region_id=self.region)
                 elif self.click_var.get() == "Rayon":
                     self.graph_by_radius()
 
