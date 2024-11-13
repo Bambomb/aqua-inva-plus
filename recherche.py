@@ -147,7 +147,7 @@ class SearchWidget(ctk.CTkFrame):
 
     #Fonction qui rafraîchit le dataframe
     def reloadData(self):
-        self.datasearch = self.master.data.drop(columns=['habitat','groupe','type_observation']).to_numpy()
+        self.datasearch = self.master.data.drop(columns=['habitat','type_observation']).to_numpy()
 
     #Fonction qui affiche les informations détaillées du résultat cliqué dans le label
     def displayresult(self, line):
@@ -159,7 +159,6 @@ class SearchWidget(ctk.CTkFrame):
         tab += "Groupe : "+ str(line[5])+"\n"
         tab += "Nom latin : "+ str(line[6])+ "\n"
         tab += "Espèce : "+ str(line[7])
-
         self.displaylabel.configure(text=tab,text_color="black")
 
 #Classe de un label résultat
