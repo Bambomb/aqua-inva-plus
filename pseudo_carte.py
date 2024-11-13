@@ -31,7 +31,7 @@ class PseudoCarte(ctk.CTkFrame):
 
         self.data = data
         self.graph = None
-        self.canvas = ctk.CTkCanvas(self)
+        self.canvas = ctk.CTkCanvas(self,bg="#d0e4f5",)
         self.canvas.pack(expand=True, fill='both')
 
         # Les polygones de la carte

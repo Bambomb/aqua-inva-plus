@@ -98,7 +98,7 @@ class SearchWidget(ctk.CTkFrame):
 
         #Label qui affiche infos supplémentaires
         self.displaylabel = ctk.CTkLabel(self.master, text=None, compound="left", justify="left", anchor="w",fg_color="white")
-        self.displaylabel.configure(text="Date : AAAA-MM-JJ\nPlan d'eau :\nRégion : \nLatitude : Y, Longitude X\nNom latin :\nEspèce :")
+        self.displaylabel.configure(text="Date : AAAA-MM-JJ\nPlan d'eau :\nRégion : \nLatitude : Y, Longitude X\nNom latin :\nEspèce :", bg_color="white",text_color="black")
         self.displaylabel.grid(row=0, column=1, sticky="n", padx=5)
 
     #Fonction d'affichage des résultats
@@ -128,7 +128,7 @@ class SearchWidget(ctk.CTkFrame):
 
     #Fonction qui crée le frame des résultats
     def frame(self):
-        self.resultats = ctk.CTkFrame(self, width=280, height=1000, border_width=2, border_color="black", bg_color="white",fg_color="white")
+        self.resultats = ctk.CTkFrame(self, width=280, height=1000, border_width=2, border_color="black", bg_color="white",fg_color="gray75")
         self.resultats.pack_propagate(0)
         self.resultats.pack(expand=1,fill="both")
 
@@ -157,7 +157,7 @@ class SearchWidget(ctk.CTkFrame):
         tab += "Région : "+ str(line[2])+ "\n"
         tab += "Latitude : "+ str(line[3])+ ", Longitude : "+ str(line[4])+"\n"
         tab += "Nom latin : "+ str(line[5])+ "\n"
-        tab += "Espèce : "+ str(line[6])+ "\n"
+        tab += "Espèce : "+ str(line[6])
 
         self.displaylabel.configure(text=tab,text_color="black")
 
