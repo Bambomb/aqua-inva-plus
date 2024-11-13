@@ -98,6 +98,7 @@ class SearchWidget(ctk.CTkFrame):
 
         #Label qui affiche infos supplémentaires
         self.displaylabel = ctk.CTkLabel(self.master, text=None, compound="left", justify="left", anchor="w",fg_color="white")
+        self.displaylabel.configure(text="Date : AAAA-MM-JJ\nPlan d'eau :\nRégion : \nLatitude : Y, Longitude X\nNom latin :\nEspèce :")
         self.displaylabel.grid(row=0, column=1, sticky="n", padx=5)
 
     #Fonction d'affichage des résultats
