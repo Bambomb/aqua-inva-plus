@@ -148,12 +148,12 @@ class SearchWidget(ctk.CTkFrame):
     #Fonction qui affiche les informations détaillées du résultat cliqué dans le label
     def displayresult(self, line):
         tab = ""
-        tab += "Date : "+ line[0]+ "\n"
-        tab += "Plan d'eau : "+ line[1]+ "\n"
-        tab += "Région : "+ line[2]+ "\n"
-        tab += "Latitude : "+ line[3]+ ", Longitude : "+ line[4]+"\n"
-        tab += "Nom latin : "+ line[5]+ "\n"
-        tab += "Espèce : "+ line[6]+ "\n"
+        tab += "Date : "+ str(line[0])+ "\n"
+        tab += "Plan d'eau : "+ str(line[1])+ "\n"
+        tab += "Région : "+ str(line[2])+ "\n"
+        tab += "Latitude : "+ str(line[3])+ ", Longitude : "+ str(line[4])+"\n"
+        tab += "Nom latin : "+ str(line[5])+ "\n"
+        tab += "Espèce : "+ str(line[6])+ "\n"
 
         self.displaylabel.configure(text=tab)
 
