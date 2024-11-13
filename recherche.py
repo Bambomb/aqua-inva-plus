@@ -27,37 +27,40 @@ class SearchWidget(ctk.CTkFrame):
     def search(self, text, side):
         results=[]
 
-        if(side==0): #Si la recherche est lancée à partir d'un changement de texte, relancer la recherche à partir du début du dataframe
-            self.x=0
-            self.y=0
-            self.nb_page = 1
-            self.max = False
+        if self.text!="" and self.text!=" ": #S'assure qu'il y a une entrée dans le champ
+            if(side==0): #Si la recherche est lancée à partir d'un changement de texte, relancer la recherche à partir du début du dataframe
+                self.x=0
+                self.y=0
+                self.nb_page = 1
+                self.max = False
 
-        if(side>=0): #Si la recherche se fait en avant
-            i = 0
-            #self.y=0
-            for line in self.datasearch[self.y:]: #Parcoure chaque colonne du dataframe
-                i+=1
-                j = 0
-                for case in line: #Parcoure chaque case de la colonne
-                    case = str(case) #Transforme en string pour le upper()
-                    j+=1
-                    if text.upper() in case.upper(): #Si la recherche se trouve dans la case
-                        results.append(line)
-                        if(len(results)>=20): #Limite à 20 résultats
-                            self.x+=j
-                            self.y+=i
-                            self.display(results)
-                            return
+            if(side>=0): #Si la recherche se fait en avant
+                i = 0
+                #self.y=0
+                for line in self.datasearch[self.y:]: #Parcoure chaque colonne du dataframe
+                    i+=1
+                    j = 0
+                    for case in line: #Parcoure chaque case de la colonne
+                        case = str(case) #Transforme en string pour le upper()
+                        j+=1
+                        if text.upper() in case.upper(): #Si la recherche se trouve dans la case
+                            results.append(line)
+                            if(len(results)>=20): #Limite à 20 résultats
+                                self.x+=j
+                                self.y+=i
+                                self.display(results)
+                                return
 
-            self.max = True     
-            self.display(results)
+                self.max = True     
+                self.display(results)
 
     #Fonction event callback du widget entry qui réagit quand le texte change
     def changed(self, event):
         self.text = event.get()
         if self.text!="" and self.text!=" ": self.search(self.text, 0) #S'assure qu'il y a une entrée dans le champ
         else:
+            self.labelpage.configure(text="-")
+            self.max = True 
             self.resultats.destroy()
             self.frame()
 
