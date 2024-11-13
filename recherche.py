@@ -145,12 +145,13 @@ class SearchWidget(ctk.CTkFrame):
     def reloadData(self):
         self.datasearch = self.master.data.drop(columns=['habitat','groupe','type_observation']).to_numpy()
 
+    #Fonction qui affiche les informations détaillées du résultat cliqué dans le label
     def displayresult(self, line):
         tab = ""
-        tab += "Date :"+ line[0]+ "\n"
-        tab += "Plan d'eau :"+ line[1]+ "\n"
-        tab += "Région :"+ line[2]+ "\n"
-        tab += "Latitude :"+ line[3]+ ", Longitude :"+ line[4]+"\n"
+        tab += "Date : "+ line[0]+ "\n"
+        tab += "Plan d'eau : "+ line[1]+ "\n"
+        tab += "Région : "+ line[2]+ "\n"
+        tab += "Latitude : "+ line[3]+ ", Longitude : "+ line[4]+"\n"
         tab += "Nom latin : "+ line[5]+ "\n"
         tab += "Espèce : "+ line[6]+ "\n"
 
