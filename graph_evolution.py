@@ -46,6 +46,7 @@ class GraphEvolution(CTkFrame):
         super().__init__(master)
         # self.frame = (CTkFrame(master))
         # self.frame.pack(fill="both", expand=1)
+        self.configure(bg_color="white", fg_color="white")
 
         wanted_data = pd.DataFrame(columns=data.columns)
         if ((center and radius) is not None) and region_id is None:
@@ -88,7 +89,7 @@ class GraphEvolution(CTkFrame):
             else:
                 data[line] += 1
         if not data:
-            text = ctk.CTkLabel(self, text="Aucune donnée à afficher pour cette région",font=CTkFont(size=20))
+            text = ctk.CTkLabel(self, text="Aucune donnée à afficher pour cette région",font=CTkFont(size=20),text_color="black")
             text.pack(expand=True)
             return
 
