@@ -53,6 +53,11 @@ class GraphEvolution(CTkFrame):
             for i in range(0, data.shape[0]):
                 element = data.iloc[i]
                 lon, lat = element["longitude"], element["latitude"]
+                try :
+                    lon = float(lon)
+                    lat = float(lat)
+                except ValueError:
+                    continue
                 if getDistanceFromLatLonInKm(x, y, lon, lat) <= radius:
                     if wanted_data.empty:
                         wanted_data = data.iloc[[i]]

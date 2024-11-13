@@ -215,16 +215,17 @@ class PseudoCarte(ctk.CTkFrame):
 
     def on_polygon_click(self, event):
         if not self.move_center:
-            self.x, self.y = self.screen_pos_to_lat_lon(event.x, event.y)
-            region, self.region = self.region_from_coords(coords=(self.x, self.y))
-            if region:
+            self.x, self.y = self.screen_pos_to_lon_lat(event.x, event.y)
+            region_id, self.region = self.region_from_coords(coords=(self.x, self.y))
+            if region_id:
                 if self.click_var.get() == "Info":
-                    show_popup(region)
+                    show_popup(region_id)
                     return
                 label = ctk.CTkLabel(self, text="Chargement...", font=ctk.CTkFont(size=20))
-                label.place(x=self.canvas.winfo_width() / 2, y=self.canvas.winfo_height() / 2, anchor='center')
+                label.place(x=self.canvas.winfo_width() / 3, y=self.canvas.winfo_height() / 2, anchor='center')
+                self.canvas.update()
                 if self.click_var.get() == "Region":
-                    self.graph = partial(GraphEvolution, data=self.data, region_id=self.region)
+                    self.graph = partial(GraphEvolution, data=self.data, region_id=region_id)
                 elif self.click_var.get() == "Rayon":
                     self.graph_by_radius(event)
                 self.master.show_graph()
