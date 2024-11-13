@@ -62,9 +62,19 @@ class addObsWidget(ctk.CTkFrame):
         region = self.master.carte.region
 
         #Ajout de la ligne
-        self.master.data.loc[len(self.master.data)]=[str(date.today()), self.eauNomEntry.get(), self.habitatEntry.get(), region, y, x, self.groupeEntry.get(), self.latinEntry.get(), self.nomEntry.get(), "Ajouté par utilisateur via Aqua-Inva"]
+
+        #Plaçage de buffers si jamais ces champs sont vides
+        if self.habitatEntry.get()!="": habitat=self.habitatEntry.get()
+        else: habitat = "Non spécifié"
+        if self.groupeEntry.get()!="": groupe=self.groupeEntry.get()
+        else: groupe = "Non spécifié"
+        if self.latinEntry.get()!="": latin=self.latinEntry.get()
+        else: latin = "Non spécifié"
+
+        #Ajout de la ligne
+        self.master.data.loc[len(self.master.data)]=[str(date.today()), self.eauNomEntry.get(), habitat, region, y, x, groupe, latin, self.nomEntry.get(), "Ajouté par utilisateur via Aqua-Inva"]
         try: self.master.data.to_csv("BD_EAE_faunique_Quebec.sss", index=False, sep=';',encoding='latin1') #Sauvegarde
-        except Exception as e:
+        except Exception as e: #Si pandas ne peut pas sauvegarder le dataframe dans le csv, ça veut dire que le csv est ouvert ailleurs
             self.popup("Erreur", "Le fichier de données est ouvert ailleurs, veuillez le fermer")
             self.refresh()
 
