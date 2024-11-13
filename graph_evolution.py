@@ -46,6 +46,7 @@ class GraphEvolution(CTkFrame):
         super().__init__(master)
         # self.frame = (CTkFrame(master))
         # self.frame.pack(fill="both", expand=1)
+        self.configure(bg_color="white", fg_color="white")
 
         wanted_data = pd.DataFrame(columns=data.columns)
         if ((center and radius) is not None) and region_id is None:
@@ -53,6 +54,11 @@ class GraphEvolution(CTkFrame):
             for i in range(0, data.shape[0]):
                 element = data.iloc[i]
                 lon, lat = element["longitude"], element["latitude"]
+                try :
+                    lon = float(lon)
+                    lat = float(lat)
+                except ValueError:
+                    continue
                 if getDistanceFromLatLonInKm(x, y, lon, lat) <= radius:
                     if wanted_data.empty:
                         wanted_data = data.iloc[[i]]
@@ -83,7 +89,7 @@ class GraphEvolution(CTkFrame):
             else:
                 data[line] += 1
         if not data:
-            text = ctk.CTkLabel(self, text="Aucune donnée à afficher pour cette région",font=CTkFont(size=20))
+            text = ctk.CTkLabel(self, text="Aucune donnée à afficher pour cette région",font=CTkFont(size=20),text_color="black")
             text.pack(expand=True)
             return
 

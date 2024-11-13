@@ -24,24 +24,26 @@ class addObsWidget(ctk.CTkFrame):
     #Création des widgets du formulaire
     def create_form(self):
         self.mainButton.destroy()
+        self.configure(bg_color="transparent", fg_color="transparent")
 
-        self.eauNomEntry = ctk.CTkEntry(self, placeholder_text="* Nom du plan d'eau")
+        self.eauNomEntry = ctk.CTkEntry(self, placeholder_text="* Nom du plan d'eau",text_color="black",bg_color="transparent",fg_color="white")
         self.eauNomEntry.grid(row=0,column=0)
-        self.habitatEntry = ctk.CTkEntry(self, placeholder_text="Type d'habitat")
+        self.habitatEntry = ctk.CTkEntry(self, placeholder_text="Type d'habitat",text_color="black",bg_color="transparent",fg_color="white")
         self.habitatEntry.grid(row=1,column=0)
-        self.groupeEntry = ctk.CTkEntry(self, placeholder_text="Groupe")
+        self.groupeEntry = ctk.CTkEntry(self, placeholder_text="Groupe",text_color="black",bg_color="transparent",fg_color="white")
         self.groupeEntry.grid(row=2,column=0)
-        self.latinEntry = ctk.CTkEntry(self, placeholder_text="Nom latin")
+        self.latinEntry = ctk.CTkEntry(self, placeholder_text="Nom latin",text_color="black",bg_color="transparent",fg_color="white")
         self.latinEntry.grid(row=3,column=0)
-        self.nomEntry = ctk.CTkEntry(self, placeholder_text="* Nom commun")
+        self.nomEntry = ctk.CTkEntry(self, placeholder_text="* Nom commun",text_color="black",bg_color="transparent",fg_color="white")
         self.nomEntry.grid(row=4,column=0)
 
-        self.mainButton = ctk.CTkButton(self, text="Ajouter observation", command=self.clickedAddsec, width=30)
+        self.mainButton = ctk.CTkButton(self, text="Ajouter observation", command=self.clickedAddsec, width=30, bg_color="transparent")
         self.mainButton.grid(row=5,column=0)
 
     #Si le bouton est cliqué une seconde fois
     def clickedAddsec(self):
-        
+        self.master.carte.click_var.set("Info")
+
         #Vérification des champs
         if self.eauNomEntry.get()=="":
             self.popup("Erreur", "Veuillez entrer un plan d'eau")
@@ -61,9 +63,19 @@ class addObsWidget(ctk.CTkFrame):
         region = self.master.carte.region
 
         #Ajout de la ligne
-        self.master.data.loc[len(self.master.data)]=[str(date.today()), self.eauNomEntry.get(), self.habitatEntry.get(), region, y, x, self.groupeEntry.get(), self.latinEntry.get(), self.nomEntry.get(), "Ajouté par utilisateur via Aqua-Inva"]
-        try: self.master.data.to_csv("BD_EAE_faunique_Quebec.sss", index=False, sep=';',encoding='latin1') #Sauvegarde
-        except Exception as e:
+
+        #Plaçage de buffers si jamais ces champs sont vides
+        if self.habitatEntry.get()!="": habitat=self.habitatEntry.get()
+        else: habitat = "Non spécifié"
+        if self.groupeEntry.get()!="": groupe=self.groupeEntry.get()
+        else: groupe = "Non spécifié"
+        if self.latinEntry.get()!="": latin=self.latinEntry.get()
+        else: latin = "Non spécifié"
+
+        #Ajout de la ligne
+        self.master.data.loc[len(self.master.data)]=[str(date.today()), self.eauNomEntry.get(), habitat, region, y, x, groupe, latin, self.nomEntry.get(), "Ajouté par utilisateur via Aqua-Inva"]
+        try: self.master.data.to_csv("BD_EAE_faunique_Quebec.scsv", index=False, sep=';',encoding='latin1') #Sauvegarde
+        except Exception as e: #Si pandas ne peut pas sauvegarder le dataframe dans le csv, ça veut dire que le csv est ouvert ailleurs
             self.popup("Erreur", "Le fichier de données est ouvert ailleurs, veuillez le fermer")
             self.refresh()
 
