@@ -11,7 +11,7 @@ from functools import partial
 from graph_evolution import GraphEvolution
 from quebec_info import region_info
 
-color = ["blue", "red", "indigo", "yellow", "purple", "orange", "brown", "pink", "teal", "plum", "coral", "orchid",
+color = ["blue", "darkorange", "indigo", "yellow", "purple", "orange", "brown", "pink", "teal", "plum", "coral", "orchid",
          "lime", "skyblue", "navy", "darkgreen", "yellowgreen"]
 
 poly_id_to_reg = {0: 11, 1: 2, 2: 10, 3: 17, 4: 14, 5: 7, 6: 15, 7: 16, 8: 8, 9: 6, 10: 5, 11: 13, 12: 1, 13: 12, 14: 4,
@@ -217,20 +217,16 @@ class PseudoCarte(ctk.CTkFrame):
         if not self.move_center:
             self.x, self.y = self.screen_pos_to_lon_lat(event.x, event.y)
             region_id, self.region = self.region_from_coords(coords=(self.x, self.y))
-            if(type(self.region)==type(1)):region_info[self.region]
             if region_id:
                 if self.click_var.get() == "Info":
                     show_popup(region_id)
                     return
-                label = ctk.CTkLabel(self, text="Chargement...", font=ctk.CTkFont(size=20))
-                label.place(x=self.canvas.winfo_width() / 3, y=self.canvas.winfo_height() / 2, anchor='center')
                 self.canvas.update()
                 if self.click_var.get() == "Region":
                     self.graph = partial(GraphEvolution, data=self.data, region_id=region_id)
                 elif self.click_var.get() == "Rayon":
                     self.graph_by_radius(event)
                 self.master.show_graph()
-                label.destroy()
 
     def graph_by_radius(self,event):
         x, y = event.x,event.y

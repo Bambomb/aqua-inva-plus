@@ -11,41 +11,12 @@ from fonction import getDistanceFromLatLonInKm
 import pandas as pd
 import customtkinter as ctk
 
-
-# def graph_from_radius(master,data,center,radius):
-#     x, y = center
-#
-#     wanted_data = pd.DataFrame()
-#
-#     for i in range(0, data.shape[0]):
-#         element = data.iloc[i]
-#         lon, lat = element["latitude"], element["longitude"]
-#         if getDistanceFromLatLonInKm(x, y, lon, lat) <= radius:
-#             wanted_data.append(element, ignore_index=True)
-#
-#     GraphEvolution(wanted_data,master)
-#
-#
-# def graph_from_region(master,data,region_id):
-#     wanted_data = pd.concat([pd.DataFrame(),data.iloc[[0]]],ignore_index=True)
-#     region = region_info[region_id]
-#
-#     for i in range(0,data.shape[0]):
-#         element = data.iloc[i]
-#         if element["region"] == region:
-#             # item = [sec for first,sec in element.items()]
-#             # wanted_data = wanted_data.concat(element)
-#             wanted_data = pd.concat([wanted_data, data.iloc[[i]]], ignore_index=True)
-#
-#     GraphEvolution(wanted_data,master)
-
-
 class GraphEvolution(CTkFrame):
+    def __del__(self):
+        plt.close()
     def __init__(self, data: pd.DataFrame, center: tuple[float, float] = None, radius: float = None,
                  region_id: int = None, master=None):
         super().__init__(master)
-        # self.frame = (CTkFrame(master))
-        # self.frame.pack(fill="both", expand=1)
         self.configure(bg_color="white", fg_color="white")
 
         wanted_data = pd.DataFrame(columns=data.columns)

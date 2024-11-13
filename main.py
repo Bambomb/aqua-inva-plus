@@ -47,8 +47,12 @@ class MainApp(ctk.CTk):
             self.columnconfigure(1, weight=1)
             self.columnconfigure(2, weight=1)
             return
+        label = ctk.CTkLabel(self, text="Chargement...", font=ctk.CTkFont(size=20),text_color="black")
+        label.place(x=self.winfo_width() / 2.5, y=self.winfo_height() / 3, anchor='center')
+        self.update()
         graph = graph_func(master=self)
         graph.grid(row=0, column=0, padx=10, sticky="nsew")
+        label.destroy()
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=0)
         self.columnconfigure(2, weight=0)
