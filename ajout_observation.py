@@ -42,7 +42,8 @@ class addObsWidget(ctk.CTkFrame):
 
     #Si le bouton est cliqué une seconde fois
     def clickedAddsec(self):
-        
+        self.master.carte.click_var.set("Info")
+
         #Vérification des champs
         if self.eauNomEntry.get()=="":
             self.popup("Erreur", "Veuillez entrer un plan d'eau")

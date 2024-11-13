@@ -217,6 +217,7 @@ class PseudoCarte(ctk.CTkFrame):
         if not self.move_center:
             self.x, self.y = self.screen_pos_to_lon_lat(event.x, event.y)
             region_id, self.region = self.region_from_coords(coords=(self.x, self.y))
+            if(type(self.region)==type(1)):region_info[self.region]
             if region_id:
                 if self.click_var.get() == "Info":
                     show_popup(region_id)
