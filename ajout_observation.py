@@ -74,7 +74,7 @@ class addObsWidget(ctk.CTkFrame):
 
         #Ajout de la ligne
         self.master.data.loc[len(self.master.data)]=[str(date.today()), self.eauNomEntry.get(), habitat, region, y, x, groupe, latin, self.nomEntry.get(), "Ajouté par utilisateur via Aqua-Inva"]
-        try: self.master.data.to_csv("BD_EAE_faunique_Quebec.sss", index=False, sep=';',encoding='latin1') #Sauvegarde
+        try: self.master.data.to_csv("BD_EAE_faunique_Quebec.scsv", index=False, sep=';',encoding='latin1') #Sauvegarde
         except Exception as e: #Si pandas ne peut pas sauvegarder le dataframe dans le csv, ça veut dire que le csv est ouvert ailleurs
             self.popup("Erreur", "Le fichier de données est ouvert ailleurs, veuillez le fermer")
             self.refresh()

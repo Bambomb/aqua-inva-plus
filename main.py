@@ -17,7 +17,7 @@ class MainApp(ctk.CTk):
         super().__init__()
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()-75}+{-10}+{0}")
         self.configure(fg_color="white")
-        self.data = create_dataframe("BD_EAE_faunique_Quebec.sss")
+        self.data = create_dataframe("BD_EAE_faunique_Quebec.scsv")
         self.title("Aqua-Inva")
         self.carte = PseudoCarte(data=self.data, master=self)
         self.graph = None
