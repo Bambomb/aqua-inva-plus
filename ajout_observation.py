@@ -24,19 +24,20 @@ class addObsWidget(ctk.CTkFrame):
     #Création des widgets du formulaire
     def create_form(self):
         self.mainButton.destroy()
+        self.configure(bg_color="transparent", fg_color="transparent")
 
-        self.eauNomEntry = ctk.CTkEntry(self, placeholder_text="* Nom du plan d'eau")
+        self.eauNomEntry = ctk.CTkEntry(self, placeholder_text="* Nom du plan d'eau",text_color="black",bg_color="transparent",fg_color="white")
         self.eauNomEntry.grid(row=0,column=0)
-        self.habitatEntry = ctk.CTkEntry(self, placeholder_text="Type d'habitat")
+        self.habitatEntry = ctk.CTkEntry(self, placeholder_text="Type d'habitat",text_color="black",bg_color="transparent",fg_color="white")
         self.habitatEntry.grid(row=1,column=0)
-        self.groupeEntry = ctk.CTkEntry(self, placeholder_text="Groupe")
+        self.groupeEntry = ctk.CTkEntry(self, placeholder_text="Groupe",text_color="black",bg_color="transparent",fg_color="white")
         self.groupeEntry.grid(row=2,column=0)
-        self.latinEntry = ctk.CTkEntry(self, placeholder_text="Nom latin")
+        self.latinEntry = ctk.CTkEntry(self, placeholder_text="Nom latin",text_color="black",bg_color="transparent",fg_color="white")
         self.latinEntry.grid(row=3,column=0)
-        self.nomEntry = ctk.CTkEntry(self, placeholder_text="* Nom commun")
+        self.nomEntry = ctk.CTkEntry(self, placeholder_text="* Nom commun",text_color="black",bg_color="transparent",fg_color="white")
         self.nomEntry.grid(row=4,column=0)
 
-        self.mainButton = ctk.CTkButton(self, text="Ajouter observation", command=self.clickedAddsec, width=30)
+        self.mainButton = ctk.CTkButton(self, text="Ajouter observation", command=self.clickedAddsec, width=30, bg_color="transparent")
         self.mainButton.grid(row=5,column=0)
 
     #Si le bouton est cliqué une seconde fois

@@ -15,8 +15,9 @@ class MainApp(ctk.CTk):
 
     def __init__(self):
         super().__init__()
-        self.data = create_dataframe("BD_EAE_faunique_Quebec.sss")
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()-75}+{-10}+{0}")
+        self.configure(fg_color="white")
+        self.data = create_dataframe("BD_EAE_faunique_Quebec.sss")
         self.title("Aqua-Inva")
         self.carte = PseudoCarte(data=self.data, master=self)
         self.graph = None
@@ -40,7 +41,7 @@ class MainApp(ctk.CTk):
         self.clear_main_frame()
         graph_func = self.carte.get_graph_function()
         if not graph_func:
-            label = ctk.CTkLabel(self, text="Aucune donnée n'a été sélectionnée", font=ctk.CTkFont(size=20))
+            label = ctk.CTkLabel(self, text="Aucune donnée n'a été sélectionnée", font=ctk.CTkFont(size=20),text_color="black")
             label.grid(row=0, column=1, padx=10, sticky="nsew")
             self.columnconfigure(0, weight=1)
             self.columnconfigure(1, weight=1)
@@ -57,7 +58,7 @@ class MainApp(ctk.CTk):
         menu_bar = tk.Menu(self)
         self.config(menu=menu_bar)
         menu_bar.add_command(label="Accueil", command=self.show_accueil)
-        menu_bar.add_command(label="Graph", command=self.show_graph)
+        menu_bar.add_command(label="Graphique", command=self.show_graph)
 
     def clear_main_frame(self):
         for widget in self.winfo_children():
