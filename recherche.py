@@ -12,7 +12,7 @@ class SearchWidget(ctk.CTkFrame):
 
         self.content = tk.StringVar()
         self.content.trace("w", lambda name, index,mode, var=self.content: self.changed(var))
-        self.datasearch = data.drop(columns=['habitat','groupe','type_observation'], errors='ignore').to_numpy()
+        self.datasearch = data.drop(columns=['habitat','type_observation'], errors='ignore').to_numpy()
         self.label_collection = []
         self.text = ""
         self.x = 0
@@ -156,8 +156,9 @@ class SearchWidget(ctk.CTkFrame):
         tab += "Plan d'eau : "+ str(line[1])+ "\n"
         tab += "Région : "+ str(line[2])+ "\n"
         tab += "Latitude : "+ str(line[3])+ ", Longitude : "+ str(line[4])+"\n"
-        tab += "Nom latin : "+ str(line[5])+ "\n"
-        tab += "Espèce : "+ str(line[6])
+        tab += "Groupe : "+ str(line[5])+"\n"
+        tab += "Nom latin : "+ str(line[6])+ "\n"
+        tab += "Espèce : "+ str(line[7])
 
         self.displaylabel.configure(text=tab,text_color="black")
 
