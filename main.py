@@ -1,5 +1,4 @@
 # main.py
-import inspect
 
 import customtkinter as ctk
 import tkinter as tk
