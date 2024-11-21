@@ -2,8 +2,7 @@
 
 import customtkinter as ctk
 import tkinter as tk
-import numpy as np
-import numpy.ma as ma
+import numpy
 
 #Classe principale 
 class SearchWidget(ctk.CTkFrame):
@@ -14,7 +13,6 @@ class SearchWidget(ctk.CTkFrame):
         self.content = tk.StringVar()
         self.content.trace("w", lambda name, index,mode, var=self.content: self.changed(var))
         self.datasearch = data.drop(columns=['habitat','type_observation'], errors='ignore').to_numpy()
-        self.datasearch = np.vectorize(str)(self.datasearch)
         self.label_collection = []
         self.text = ""
         self.x = 0
@@ -37,12 +35,21 @@ class SearchWidget(ctk.CTkFrame):
                 self.max = False
 
             if(side>=0): #Si la recherche se fait en avant
-                v_is_in = np.vectorize(self.is_in)
-                #mask = np.vectorize(lambda x: text in x)(self.datasearch)
-                #mask = v_is_in(self.datasearch, text)
-                mask = np.core.defchararray.find(self.datasearch, text) >= 0
-                print(mask)
-                results = np.where(mask, self.datasearch, "*")
+                i = 0
+                #self.y=0
+                for line in self.datasearch[self.y:]: #Parcoure chaque colonne du dataframe
+                    i+=1
+                    j = 0
+                    for case in line: #Parcoure chaque case de la colonne
+                        case = str(case) #Transforme en string pour le upper()
+                        j+=1
+                        if text.upper() in case.upper(): #Si la recherche se trouve dans la case
+                            results.append(line)
+                            if(len(results)>=20): #Limite à 20 résultats
+                                self.x+=j
+                                self.y+=i
+                                self.display(results)
+                                return
 
                 self.max = True     
                 self.display(results)
@@ -113,11 +120,11 @@ class SearchWidget(ctk.CTkFrame):
         index = 0
         for i, result in enumerate(results):
             for j, case in enumerate(result):
-                if(i<=20 and case !="*"):
-                    reslab = ResultLabel(smalltext=result[7], bigtext = result, supermaster=self, master=self.resultats)
-                    self.label_collection.append(reslab)
-                    self.label_collection[i].pack(expand=True,side=tk.TOP)
-                    
+                 if str(self.text).upper() in str(case).upper():
+                     index = j
+            reslab = ResultLabel(smalltext=result[index], bigtext = result, supermaster=self, master=self.resultats)
+            self.label_collection.append(reslab)
+            self.label_collection[i].pack(expand=True,side=tk.TOP)
 
     #Fonction qui crée le frame des résultats
     def frame(self):
@@ -153,9 +160,6 @@ class SearchWidget(ctk.CTkFrame):
         tab += "Nom latin : "+ str(line[6])+ "\n"
         tab += "Espèce : "+ str(line[7])
         self.displaylabel.configure(text=tab,text_color="black")
-
-    def is_in(self, a, b):
-        return a in b
 
 #Classe de un label résultat
 class ResultLabel(ctk.CTkLabel):
