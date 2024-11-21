@@ -19,6 +19,7 @@ class SearchWidget(ctk.CTkFrame):
         self.y = 0
         self.max = False
         self.nb_page = 1
+        self.filter_list = []
         self.configure(height=self.master.winfo_screenheight()-200,width=5, bg_color="white",fg_color="white")
         # self.configure(width=5)
         self.create_widgets()
@@ -76,6 +77,7 @@ class SearchWidget(ctk.CTkFrame):
         #Entry du champ de recherche
         self.champ = ctk.CTkEntry(self, placeholder_text="Rechercher", textvariable=self.content, bg_color="white",text_color="black",fg_color="white")
         self.champ.pack()
+        self.champ.bind("<Return>", command=self.enter) #Bind la commande entrée à l'entry pour que quand on appuie sur entrée ça appelle la fonction
 
         #Crée le frame de résultats
         self.frame()
@@ -100,6 +102,10 @@ class SearchWidget(ctk.CTkFrame):
         self.displaylabel = ctk.CTkLabel(self.master, text=None, compound="left", justify="left", anchor="w",fg_color="white")
         self.displaylabel.configure(text="Date : AAAA-MM-JJ\nPlan d'eau :\nRégion : \nLatitude : Y, Longitude X\nNom latin :\nEspèce :", bg_color="white",text_color="black")
         self.displaylabel.grid(row=0, column=1, sticky="n", padx=5)
+
+        #Frame qui contient les filtres
+        self.filter_frame = ctk.CTkFrame(self, height=2)
+        self.filter_frame.pack(side=tk.TOP)
 
     #Fonction d'affichage des résultats
     def display(self, results):
@@ -161,6 +167,28 @@ class SearchWidget(ctk.CTkFrame):
         tab += "Espèce : "+ str(line[7])
         self.displaylabel.configure(text=tab,text_color="black")
 
+    #Fonction event callback quand on appuie sur entrée pour ajouter un filtre
+    def enter(self, event):
+        if(self.content.get()=="" or self.content.get() == " "):return #Ne pas ajouter de filtre si le champ est vide
+        else: self.add_filter(self.content.get())
+
+    #Fonction qui ajoute un filtre
+    def add_filter(self, text):
+        self.filter_list.append(Filtre(text, id=len(self.filter_list),supermaster=self,master=self.filter_frame)) #Crée un filtre et l'ajoute dans la liste
+        temp_widget = self.filter_list[-1]
+        temp_widget.grid(row=0, column=len(self.filter_list)) #Affiche le label du filtre
+
+    #Fonction pour enlever un filtre dans la liste
+    def remove_filter(self, id):
+        self.filter_list.pop(id)
+        self.filter_reset_ids() #Met à jour l'attribut id des filtres selon leurs nouveaux index
+        if(id==0):self.filter_frame.configure(height=2) #S'il n'y a plus de filtre, cacher le frame
+
+    #Met à jour l'attribut id des filtres selon leurs nouveaux index
+    def filter_reset_ids(self):
+        for id, filter in enumerate(self.filter_list):
+            filter.set_id(id)
+
 #Classe de un label résultat
 class ResultLabel(ctk.CTkLabel):
     def __init__(self, smalltext, bigtext, supermaster, master=None):
@@ -181,3 +209,34 @@ class ResultLabel(ctk.CTkLabel):
             self.supermaster.master.carte.del_waypoint()
             return
         self.supermaster.master.carte.set_waypoint(line[4],line[3])
+
+#Class du label de filtre
+class Filtre(ctk.CTkFrame):
+    def __init__(self, text, id, supermaster, master=None):
+        super().__init__(master)
+        self.master = master
+        self.supermaster = supermaster
+        self.text = text
+        self.id = id
+        self.configure(fg_color="blue")
+
+        self.create_widgets()
+
+    #Création des widgets
+    def create_widgets(self):
+        label_text = ctk.CTkLabel(self, text=self.text, text_color="white")
+        label_text.grid(row=0, column=0, padx=5)
+
+        x_button = ctk.CTkLabel(self, text="x", text_color="white")
+        x_button.bind("<ButtonRelease-1>", lambda event:self.remove_filter()) #Bind la fonction de suppression au bouton x
+        x_button.grid(row=0, column=1, padx=5)
+
+    #Pour se supprimer soi-même
+    def remove_filter(self):
+        self.supermaster.remove_filter(self.id) #Informe le supermaster que le filtre doit être supprimé de la liste
+        self.destroy()
+
+    def set_id(self,id):
+        self.id=id
+
+    
