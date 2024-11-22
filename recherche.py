@@ -38,19 +38,20 @@ class SearchWidget(ctk.CTkFrame):
             if(side>=0): #Si la recherche se fait en avant
                 i = 0
                 #self.y=0
-                for line in self.datasearch[self.y:]: #Parcoure chaque colonne du dataframe
+                for line in self.datasearch[self.y:]: #Parcoure chaque ligne du dataframe
                     i+=1
                     j = 0
-                    for case in line: #Parcoure chaque case de la colonne
-                        case = str(case) #Transforme en string pour le upper()
-                        j+=1
-                        if text.upper() in case.upper(): #Si la recherche se trouve dans la case
-                            results.append(line)
-                            if(len(results)>=20): #Limite à 20 résultats
-                                self.x+=j
-                                self.y+=i
-                                self.display(results)
-                                return
+                    if(self.follows_filters(line)):
+                        for case in line: #Parcoure chaque case de la ligne
+                            case = str(case) #Transforme en string pour le upper()
+                            j+=1
+                            if text.upper() in case.upper(): #Si la recherche se trouve dans la case
+                                results.append(line)
+                                if(len(results)>=20): #Limite à 20 résultats
+                                    self.x+=j
+                                    self.y+=i
+                                    self.display(results)
+                                    return
 
                 self.max = True     
                 self.display(results)
@@ -58,7 +59,7 @@ class SearchWidget(ctk.CTkFrame):
     #Fonction event callback du widget entry qui réagit quand le texte change
     def changed(self, event):
         self.text = event.get()
-        if self.text!="" and self.text!=" ": self.search(self.text, 0) #S'assure qu'il y a une entrée dans le champ
+        if (self.text!="" and self.text!=" ") or len(self.filter_list)>0: self.search(self.text, 0) #S'assure qu'il y a une entrée dans le champ
         else:
             self.labelpage.configure(text="-")
             self.max = True 
@@ -170,7 +171,9 @@ class SearchWidget(ctk.CTkFrame):
     #Fonction event callback quand on appuie sur entrée pour ajouter un filtre
     def enter(self, event):
         if(self.content.get()=="" or self.content.get() == " "):return #Ne pas ajouter de filtre si le champ est vide
-        else: self.add_filter(self.content.get())
+        else: 
+            self.add_filter(self.content.get())
+            self.content.set("")
 
     #Fonction qui ajoute un filtre
     def add_filter(self, text):
@@ -183,11 +186,23 @@ class SearchWidget(ctk.CTkFrame):
         self.filter_list.pop(id)
         self.filter_reset_ids() #Met à jour l'attribut id des filtres selon leurs nouveaux index
         if(id==0):self.filter_frame.configure(height=2) #S'il n'y a plus de filtre, cacher le frame
+        self.search(self.text, 0)
 
     #Met à jour l'attribut id des filtres selon leurs nouveaux index
     def filter_reset_ids(self):
         for id, filter in enumerate(self.filter_list):
             filter.set_id(id)
+
+    #Fonction qui renvoie un bool pour vérifier si la ligne convient aux filtres entrés
+    def follows_filters(self, line):
+        for filter in self.filter_list: #Pour chaque filtre dans la liste
+            filter_real = False 
+            for case in line: #Pour chaque case dans la ligne
+                if str(filter.text).upper() in str(case).upper(): filter_real = True #Est-ce que le filtre convient à la case
+            if filter_real==False: return False #S'il est toujours faux après avoir été comparé à chaque case, alors le filtre ne convient pas à la ligne, donc faux
+        return True
+            
+
 
 #Classe de un label résultat
 class ResultLabel(ctk.CTkLabel):
@@ -218,7 +233,7 @@ class Filtre(ctk.CTkFrame):
         self.supermaster = supermaster
         self.text = text
         self.id = id
-        self.configure(fg_color="blue")
+        self.configure(fg_color="#3b8ed0")
 
         self.create_widgets()
 
