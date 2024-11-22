@@ -10,6 +10,7 @@ from recherche import SearchWidget
 from dataframe import create_dataframe
 from pseudo_carte import PseudoCarte
 from ajout_observation import addObsWidget
+from evo_graph import GraphiqueEvolution
 
 class MainApp(ctk.CTk):
 
@@ -58,11 +59,36 @@ class MainApp(ctk.CTk):
         self.columnconfigure(2, weight=0)
         # self.create_menu()
 
+    def show_evo(self):
+        #Code volé à Adam:
+        self.clear_main_frame()
+        spec = self.search_widget.spec
+        if not spec:
+            label = ctk.CTkLabel(self, text="Aucune espèce n'a été sélectionnée", font=ctk.CTkFont(size=20),text_color="black")
+            label.grid(row=0, column=1, padx=10, sticky="nsew")
+            self.columnconfigure(0, weight=1)
+            self.columnconfigure(1, weight=1)
+            self.columnconfigure(2, weight=1)
+            return
+        
+        label = ctk.CTkLabel(self, text="Chargement...", font=ctk.CTkFont(size=20),text_color="black")
+        label.place(x=self.winfo_width() / 2.5, y=self.winfo_height() / 3, anchor='center')
+        self.update()
+
+        graph = GraphiqueEvolution(spec, self.data, master=self)
+        graph.grid(row=0, column=0, padx=10, sticky="nsew")
+        label.destroy()
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=0)
+        self.columnconfigure(2, weight=0)
+
+
     def create_menu(self):
         menu_bar = tk.Menu(self)
         self.config(menu=menu_bar)
         menu_bar.add_command(label="Accueil", command=self.show_accueil)
-        menu_bar.add_command(label="Graphique", command=self.show_graph)
+        menu_bar.add_command(label="Proportions", command=self.show_graph)
+        menu_bar.add_command(label="Évolutions", command=self.show_evo)
 
     def clear_main_frame(self):
         for widget in self.winfo_children():

@@ -15,6 +15,7 @@ class SearchWidget(ctk.CTkFrame):
         self.datasearch = data.drop(columns=['habitat','type_observation'], errors='ignore').to_numpy()
         self.label_collection = []
         self.text = ""
+        self.spec = None
         self.x = 0
         self.y = 0
         self.max = False
@@ -219,6 +220,7 @@ class ResultLabel(ctk.CTkLabel):
 
     def on_res_click(self, line):
         self.supermaster.displayresult(line)
+        self.supermaster.spec=line[6]
         try:line4=float(line[4])
         except Exception as e:
             self.supermaster.master.carte.del_waypoint()
