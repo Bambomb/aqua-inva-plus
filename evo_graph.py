@@ -56,10 +56,14 @@ class GraphiqueEvolution(ctk.CTkFrame):
 
         #Création du plot
         plot = self.frame.add_subplot(111) #Ça je sais pas à quoi ça sert
-        plot.plot(x,y)
+        plot.plot(x,y, "-o", color="green", label=f"Nombre d'observations de {self.spec} pour l'année")
         plot.set_xlabel("Années")
-        plot.set_ylabel("Nombre d'obersvations")
+        plot.set_ylabel(f"Nombre d'observations de de {self.spec}")
         plot.set_xticks(np.arange(self.annee_min,self.annee_max,5))
+        plot.set_label(f"Nombre d'observations de {self.spec} pour l'année")
+        plot.set_title(f"Nombre d'observations de {self.spec} selon le temps")
+        plot.legend(loc="upper left")
+        plot.grid()
 
         canvas = FigureCanvasTkAgg(self.frame, master=self)
         canvas.draw()
