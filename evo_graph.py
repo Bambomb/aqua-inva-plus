@@ -15,9 +15,17 @@ class GraphiqueEvolution(ctk.CTkFrame):
     def __init__(self, spec, data:pd.DataFrame, master=None):
         super().__init__(master)
         self.master=master
-
         self.spec = spec
-        self.data = data.drop(columns=["latitude","longitude","groupe"]).copy()
+        self.data = data
+
+        #Trouver n'importe quelle ligne du dataframe qui correspond à l'espèce afin d'avoir des informations supplémentaires sur celle-ci
+        self.ex_line = self.data.loc[0, :]
+        i = 0
+        while(self.ex_line["especes"]!=self.spec and i<8131): #Tant que l'espèce ne correspond pas, continuer à chercher
+            self.ex_line=self.data.loc[i, :]
+            i+=1
+
+        self.data = self.data.drop(columns=["latitude","longitude","groupe"]).copy()
 
         #Transformer la date en ne conservant que l'année pour chaque ligne
         for i, case in enumerate(self.data['date']):
@@ -44,6 +52,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
             else: self.data_info.loc[i, "quantite"] = 0 #Si le dataframe est vide, alors il n'y a pas d'observations cette année-là, il faut donc assigner 0
 
         self.create_graph()
+        self.create_widgets()
 
     #Fonction qui crée et affiche le graphique dans la page
     def create_graph(self):
@@ -69,3 +78,13 @@ class GraphiqueEvolution(ctk.CTkFrame):
         canvas.draw()
 
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    def create_widgets(self):
+
+        self.info_label = ctk.CTkLabel(self)
+        txt = ""
+        txt += "Groupe : "+ str(self.ex_line["groupe"])+"\n"
+        txt += "Nom latin : "+ str(self.ex_line["especes"])+ "\n"
+        txt += "Espèce : "+ str(self.ex_line["nom_commun"])
+        self.info_label.configure(text=txt, bg_color="white")
+        self.info_label.place(x=0, y=20)
