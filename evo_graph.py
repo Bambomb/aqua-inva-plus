@@ -12,7 +12,7 @@ NavigationToolbar2Tk)
 
 #Classe principale
 class GraphiqueEvolution(ctk.CTkFrame):
-    def __init__(self, spec, data, master=None):
+    def __init__(self, spec, data:pd.DataFrame, master=None):
         super().__init__(master)
         self.master=master
 
@@ -24,13 +24,16 @@ class GraphiqueEvolution(ctk.CTkFrame):
             annee=case[0:4]
             self.data.loc[i, 'date'] = annee
 
+        self.annee_min = int(self.data['date'].min())
+        self.annee_max = int(self.data['date'].max())
+
         data_spec=self.data[self.data["especes"]==spec] #Masque pour filtrer selon l'espèce en argument
         self.data_count = data_spec.groupby("date").size().reset_index() #Compte le nombre d'apparition de l'espèce pour la date
         self.data_count['date']=pd.to_numeric(self.data_count['date']) #Transforme les dates de string à nombre pour les comparer après avec le numpy
 
         dicto = {'annee':[],'quantite':[]} #Création d'un dictionnaire pour ensuite créer un dataframe neuf
         self.data_info = pd.DataFrame(dicto).copy() #Création d'un dataframe neuf parce que c'est plus pratique
-        self.data_info['annee']=np.arange(1900,2024+1,1) #Toutes les années de 1900 à 2024
+        self.data_info['annee']=np.arange(self.annee_min,self.annee_max,1) #Toutes les années de 1900 à 2024
         self.data_info = self.data_info.copy()
 
         #Pour chaque année de 1900 à 2024, comparer avec le dataframe originel pour voir s'il y a une valeur (nombre d'observations) cette année là où s'il n'y a pas d'observations
@@ -56,7 +59,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
         plot.plot(x,y)
         plot.set_xlabel("Années")
         plot.set_ylabel("Nombre d'obersvations")
-        plot.set_xticks(np.arange(1900,2024+1,5))
+        plot.set_xticks(np.arange(self.annee_min,self.annee_max,5))
 
         canvas = FigureCanvasTkAgg(self.frame, master=self)
         canvas.draw()
