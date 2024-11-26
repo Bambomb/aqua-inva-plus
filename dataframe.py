@@ -5,4 +5,5 @@ def create_dataframe(file_path):
     data= pd.read_csv(file_path,delimiter=";",encoding='latin1')
     data = data.drop(columns=['source','references','code_observation'], errors='ignore')
     data = data.dropna()
+    if "marque" not in data.columns:data = data.assign(marque="-")
     return data

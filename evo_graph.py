@@ -32,6 +32,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
             annee=case[0:4]
             self.data.loc[i, 'date'] = annee
 
+        #Déterminer les années minimale et maximale du dataframe
         self.annee_min = int(self.data['date'].min())
         self.annee_max = int(self.data['date'].max())
 
@@ -79,6 +80,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
 
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
+    #Fonction de création et d'affichage des widgets
     def create_widgets(self):
 
         self.info_label = ctk.CTkLabel(self)

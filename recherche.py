@@ -2,7 +2,8 @@
 
 import customtkinter as ctk
 import tkinter as tk
-import numpy
+import numpy as np
+import pandas as pd
 
 #Classe principale 
 class SearchWidget(ctk.CTkFrame):
@@ -13,6 +14,8 @@ class SearchWidget(ctk.CTkFrame):
         self.content = tk.StringVar()
         self.content.trace("w", lambda name, index,mode, var=self.content: self.changed(var))
         self.datasearch = data.drop(columns=['habitat','type_observation'], errors='ignore').to_numpy()
+        indexlist = data[:].reset_index(drop=False)["index"].to_numpy().reshape(-1, 1)
+        self.datasearch = np.concatenate((self.datasearch, indexlist), axis=1)
         self.label_collection = []
         self.text = ""
         self.spec = None
@@ -21,6 +24,8 @@ class SearchWidget(ctk.CTkFrame):
         self.max = False
         self.nb_page = 1
         self.filter_list = []
+        self.data_index = 0
+        self.checked = ctk.BooleanVar()
         self.configure(height=self.master.winfo_screenheight()-200,width=5, bg_color="white",fg_color="white")
         # self.configure(width=5)
         self.create_widgets()
@@ -109,8 +114,33 @@ class SearchWidget(ctk.CTkFrame):
         self.filter_frame = ctk.CTkFrame(self, height=2)
         self.filter_frame.pack(side=tk.TOP)
 
+        #Checkbox pour marquer ou démarquer une observation
+        self.check = ctk.CTkCheckBox(self.displaylabel, text="Marqué", command=self.check_change_state, variable=self.checked)
+        self.check.grid(row=2)
+        self.check.configure(state=ctk.DISABLED)
+
+    #Fonction event callback quand le checkmark est cliqué, alors l'état change
+    def check_change_state(self):
+        if(self.checked.get()==True): #Si le checkmark est désormais coché, il faut ajouter une marque à la ligne
+            self.master.data.loc[self.data_index, "marque"]="Marque"
+
+        elif(self.checked.get()==False): #Si le checkmark est désormais décoché, il faaut retirer la marque de la ligne
+            self.master.data.loc[self.data_index, "marque"]="-"
+
+        #Code volé de ajout_observation
+        try: self.master.data.to_csv("BD_EAE_faunique_Quebec.scsv", index=False, sep=';',encoding='latin1') #Sauvegarde
+        except Exception as e: #Si pandas ne peut pas sauvegarder le dataframe dans le csv, ça veut dire que le csv est ouvert ailleurs
+            self.master.addObs.popup("Erreur", "Le fichier de données est ouvert ailleurs, veuillez le fermer")
+
+        self.reloadData() #Recharger le dataframe
+        self.search(self.content.get(),0) #Rafraîchir le displayresult
+
+
     #Fonction d'affichage des résultats
     def display(self, results):
+        #Protection du checkbox
+        self.check.configure(state=ctk.DISABLED)
+
         #Rafraîchissement
         self.master.carte.del_waypoint()
         self.resultats.destroy()
@@ -156,9 +186,12 @@ class SearchWidget(ctk.CTkFrame):
     #Fonction qui rafraîchit le dataframe
     def reloadData(self):
         self.datasearch = self.master.data.drop(columns=['habitat','type_observation']).to_numpy()
+        indexlist = self.master.data[:].reset_index(drop=False)["index"].to_numpy().reshape(-1, 1)
+        self.datasearch = np.concatenate((self.datasearch, indexlist), axis=1)
 
     #Fonction qui affiche les informations détaillées du résultat cliqué dans le label
     def displayresult(self, line):
+        self.data_index=line[9]
         tab = ""
         tab += "Date : "+ str(line[0])+ "\n"
         tab += "Plan d'eau : "+ str(line[1])+ "\n"
@@ -168,6 +201,10 @@ class SearchWidget(ctk.CTkFrame):
         tab += "Nom latin : "+ str(line[6])+ "\n"
         tab += "Espèce : "+ str(line[7])
         self.displaylabel.configure(text=tab,text_color="black")
+        self.check.configure(state=ctk.NORMAL)
+        if(str(line[8])=="Marque"):self.checked.set(True)
+        else:self.checked.set(False)
+
 
     #Fonction event callback quand on appuie sur entrée pour ajouter un filtre
     def enter(self, event):
@@ -202,8 +239,6 @@ class SearchWidget(ctk.CTkFrame):
                 if str(filter.text).upper() in str(case).upper(): filter_real = True #Est-ce que le filtre convient à la case
             if filter_real==False: return False #S'il est toujours faux après avoir été comparé à chaque case, alors le filtre ne convient pas à la ligne, donc faux
         return True
-            
-
 
 #Classe de un label résultat
 class ResultLabel(ctk.CTkLabel):
