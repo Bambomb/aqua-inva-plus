@@ -28,7 +28,7 @@ class MainApp(ctk.CTk):
 
     def show_accueil(self):
         self.clear_main_frame()
-        self.search_widget = SearchWidget(self.data, master=self)
+        self.search_widget = SearchWidget(self.data, carte=self.carte, master=self)
         self.search_widget.grid(row=0, column=0, padx=10, sticky="nsew")
         self.carte.grid(row=0, column=1, padx=10, sticky="nsew")
         self.addObs = addObsWidget(master=self)

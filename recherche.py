@@ -7,7 +7,7 @@ import pandas as pd
 
 #Classe principale 
 class SearchWidget(ctk.CTkFrame):
-    def __init__(self, data, master=None):
+    def __init__(self, data, carte=None, master=None):
         super().__init__(master)
         self.master = master
 
@@ -17,8 +17,10 @@ class SearchWidget(ctk.CTkFrame):
         indexlist = data[:].reset_index(drop=False)["index"].to_numpy().reshape(-1, 1)
         self.datasearch = np.concatenate((self.datasearch, indexlist), axis=1)
         self.label_collection = []
+        self.carte = carte
         self.text = ""
         self.spec = None
+        self.eau = "Aucun"
         self.x = 0
         self.y = 0
         self.max = False
@@ -53,7 +55,7 @@ class SearchWidget(ctk.CTkFrame):
                             j+=1
                             if text.upper() in case.upper(): #Si la recherche se trouve dans la case
                                 results.append(line)
-                                if(len(results)>=20): #Limite à 20 résultats
+                                if len(results)>=self.resultats.winfo_height()//43: #Limite le nombre de résultats
                                     self.x+=j
                                     self.y+=i
                                     self.display(results)
@@ -142,7 +144,7 @@ class SearchWidget(ctk.CTkFrame):
         self.check.configure(state=ctk.DISABLED)
 
         #Rafraîchissement
-        self.master.carte.del_waypoint()
+        if(self.carte):self.carte.del_waypoint()
         self.resultats.destroy()
         if(self.max==False):
             self.labelpage.configure(text=self.nb_page)
@@ -250,17 +252,17 @@ class ResultLabel(ctk.CTkLabel):
         self.bigtext = bigtext
 
         self.configure(text=smalltext, fg_color="white", width=197,text_color="black")
-        i=0
         self.bind("<ButtonRelease-1>", command=lambda event:self.on_res_click(self.bigtext))
 
     def on_res_click(self, line):
         self.supermaster.displayresult(line)
         self.supermaster.spec=line[6]
+        self.supermaster.eau=line[1]
         try:line4=float(line[4])
         except Exception as e:
-            self.supermaster.master.carte.del_waypoint()
+            if(self.supermaster.carte):self.supermaster.carte.del_waypoint()
             return
-        self.supermaster.master.carte.set_waypoint(line[4],line[3])
+        if(self.supermaster.carte):self.supermaster.carte.set_waypoint(line[4],line[3])
 
 #Class du label de filtre
 class Filtre(ctk.CTkFrame):
