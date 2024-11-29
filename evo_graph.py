@@ -153,6 +153,8 @@ class GraphiqueEvolution(ctk.CTkFrame):
 
         #Selon le mode en argument
         if(mode=="region"):
+            self.addeaubutton.configure(state=tk.DISABLED)
+            self.radiusbutton.configure(state=tk.DISABLED)
             self.maplabel.configure(text="Choisissez une région")
             self.tempmap.click_var.set("Info")
             self.tempmap.click_info.configure(state=tk.NORMAL)
@@ -162,6 +164,8 @@ class GraphiqueEvolution(ctk.CTkFrame):
             self.addregionbutton.configure(command=self.add_filter_region) #Remapper le bouton
 
         elif(mode=="radius"):
+            self.addeaubutton.configure(state=tk.DISABLED)
+            self.addregionbutton.configure(state=tk.DISABLED)
             self.maplabel.configure(text="Sélectionnez un rayon")
             self.tempmap.click_var.set("Rayon-nograph")
             self.tempmap.click_rayon.configure(state=tk.DISABLED)
@@ -182,6 +186,8 @@ class GraphiqueEvolution(ctk.CTkFrame):
         self.tempsearch.displaylabel.configure(width=2, font=("Arial",1))
 
         #Remapper le bouton
+        self.addregionbutton.configure(state=tk.DISABLED)
+        self.radiusbutton.configure(state=tk.DISABLED)
         self.addeaubutton.configure(command=self.add_filter_eau)
         
 

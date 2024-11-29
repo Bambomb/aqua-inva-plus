@@ -82,7 +82,6 @@ class MainApp(ctk.CTk):
         self.columnconfigure(1, weight=0)
         self.columnconfigure(2, weight=0)
 
-
     def create_menu(self):
         menu_bar = tk.Menu(self)
         self.config(menu=menu_bar)
