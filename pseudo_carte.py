@@ -66,6 +66,7 @@ class PseudoCarte(ctk.CTkFrame):
         # Position du clic
         self.x = "Non précisé"
         self.y = "Non précisé"
+        self.radius = 0
         self.region = "Inconnue"
 
         # type de clic (region/rayon)
@@ -226,6 +227,9 @@ class PseudoCarte(ctk.CTkFrame):
                     self.graph = partial(GraphEvolution, data=self.data, region_id=region_id)
                 elif self.click_var.get() == "Rayon":
                     self.graph_by_radius(event)
+                elif self.click_var.get() == "Rayon-nograph":
+                    self.radius=self.click_rayon_radius.get()
+                    return
                 self.master.show_graph()
 
     def graph_by_radius(self,event):

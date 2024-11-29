@@ -13,6 +13,8 @@ NavigationToolbar2Tk)
 from pseudo_carte import PseudoCarte
 from recherche import SearchWidget
 
+from fonction import getDistanceFromLatLonInKm
+
 #Classe principale
 class GraphiqueEvolution(ctk.CTkFrame):
     def __init__(self, spec, data:pd.DataFrame, master=None):
@@ -29,7 +31,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
             self.ex_line=self.data.loc[i, :]
             i+=1
 
-        self.data = self.data.drop(columns=["latitude","longitude","groupe"]).copy()
+        self.data = self.data.drop(columns=["groupe"]).copy()
 
         #Transformer la date en ne conservant que l'année pour chaque ligne
         for i, case in enumerate(self.data['date']):
@@ -45,8 +47,12 @@ class GraphiqueEvolution(ctk.CTkFrame):
 
     #Continue la construction de la classe
     def construct(self, filter=None, filtertype=None):
-        #S'il y a un filtre additionnel, filtrer selon le filtre et selon l'espèce en argument. Sinon, filtrer seulent selon l'espèce
-        if(filter):data_spec=self.data[(self.data["especes"]==self.spec) & (self.data[filtertype]==filter)] #Si un filtre est défini, la case correspondant au type de filtre doit correspondre au filtre
+
+        #Filtrer le dataframe selon l'espèce et selon les filtres, s'il y en a
+        if(filtertype=="radius"):#Si le type de filtre est radius, il faut vérifier différement que par comparaison directe
+            x, y, radius = filter #Déstructuration du filtre tuple pour avoir les coordonnées x et y du centre du rayon donné, ainsi que radius, la longueur du rayon
+            data_spec=self.radius_filtered(df = self.data, x = x, y = y, radius = radius)
+        elif(filter):data_spec=self.data[(self.data["especes"]==self.spec) & (self.data[filtertype]==filter)] #Si un filtre est défini, la case correspondant au type de filtre doit correspondre au filtre
         else:data_spec=self.data[self.data["especes"]==self.spec] #Masque pour filtrer selon l'espèce en argument
 
         self.data_count = data_spec.groupby("date").size().reset_index() #Compte le nombre d'apparition de l'espèce pour la date
@@ -68,6 +74,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
         #S'il y a un filtre, le communiquer au graphique. Sinon, indiquer qu'il n'y en a pas
         if(filter and filtertype=="region"): self.create_graph("en "+str(filter)) 
         elif(filter and filtertype=="nom_plan_eau"): self.create_graph("au "+str(filter))
+        elif(filter and filtertype=="radius"): self.create_graph("dans le rayon spécifié")
         else: self.create_graph() 
 
         #Créer les autres widgets
@@ -101,6 +108,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
     #Fonction de création et d'affichage des widgets
     def create_widgets(self):
 
+        #Label d'informations supplémentaires
         self.info_label = ctk.CTkLabel(self)
         txt = ""
         txt += "Groupe : "+ str(self.ex_line["groupe"])+"\n"
@@ -109,35 +117,58 @@ class GraphiqueEvolution(ctk.CTkFrame):
         self.info_label.configure(text=txt, bg_color="white")
         self.info_label.place(x=0, y=20)
 
+        #Frame pour les boutons pour ajouter des filtres
         self.addfilterframe = ctk.CTkFrame(self, width=150, bg_color="white", fg_color="white")
         self.addfilterframe.place(x=1365, y=0)
 
+        #Label
         self.filterlabel = ctk.CTkLabel(self.addfilterframe, text="Filtres")
         self.filterlabel.grid(row=0, padx=10, pady=5)
 
-        self.addregionbutton = ctk.CTkButton(self.addfilterframe, text="Ajouter région", command=self.show_map)
+        #Bouton ajouter filtre région
+        self.addregionbutton = ctk.CTkButton(self.addfilterframe, text="Ajouter région")
+        self.addregionbutton.configure(command=lambda: self.show_map(mode="region"))
         self.addregionbutton.grid(row=1, padx=10, pady=5)
 
+        #Bouton ajouter filtre plan d'eau
         self.addeaubutton = ctk.CTkButton(self.addfilterframe, text="Ajouter étendue d'eau", command=self.show_search)
         self.addeaubutton.grid(row=2, padx=0, pady=5)
 
+        #Bouton ajouter filtre rayon
+        self.radiusbutton = ctk.CTkButton(self.addfilterframe, text="Ajouter rayon")
+        self.radiusbutton.configure(command=lambda: self.show_map(mode="radius"))
+        self.radiusbutton.grid(row=3, padx=0, pady=5)
+
     #Afficher la carte temporaire pour choisir la région à utiliser comme filtre
-    def show_map(self):
+    def show_map(self, mode):
 
         #Faire la place pour la carte
         self.swap_screen()
         
         #Carte temporaire
-        self.maplabel = ctk.CTkLabel(self.midframe, text="Choisissez une région")
+        self.maplabel = ctk.CTkLabel(self.midframe)
         self.maplabel.pack()
         self.tempmap = PseudoCarte(None, master=self.midframe)
         self.tempmap.pack(expand=True, fill="both")
-        self.tempmap.click_var.set("Info")
-        self.tempmap.click_region.configure(state=tk.DISABLED)
-        self.tempmap.click_rayon.configure(state=tk.DISABLED)
 
-        #Remapper le bouton
-        self.addregionbutton.configure(command=self.add_filter_region)
+        #Selon le mode en argument
+        if(mode=="region"):
+            self.maplabel.configure(text="Choisissez une région")
+            self.tempmap.click_var.set("Info")
+            self.tempmap.click_info.configure(state=tk.NORMAL)
+            self.tempmap.click_region.configure(state=tk.DISABLED)
+            self.tempmap.click_rayon.configure(state=tk.DISABLED)
+
+            self.addregionbutton.configure(command=self.add_filter_region) #Remapper le bouton
+
+        elif(mode=="radius"):
+            self.maplabel.configure(text="Sélectionnez un rayon")
+            self.tempmap.click_var.set("Rayon-nograph")
+            self.tempmap.click_rayon.configure(state=tk.DISABLED)
+            self.tempmap.click_info.configure(state=tk.DISABLED)
+            self.tempmap.click_region.configure(state=tk.DISABLED)
+
+            self.radiusbutton.configure(command=self.add_filter_radius) #Remapper le bouton
 
     def show_search(self):
         #Faire la place pour la recherche temporaire
@@ -158,8 +189,13 @@ class GraphiqueEvolution(ctk.CTkFrame):
     def add_filter_region(self):
         self.construct(filter=self.tempmap.region, filtertype="region")
 
+    #Reconstruit l'instance en y ajoutant le filtre de plan d'eau
     def add_filter_eau(self):
         self.construct(filter=self.tempsearch.eau, filtertype="nom_plan_eau")
+
+    #Reconstruit l'instance en y ajoutant le filtre de rayon
+    def add_filter_radius(self):
+        self.construct(filter=(self.tempmap.x, self.tempmap.y, self.tempmap.radius), filtertype="radius")
 
     #Enlève le graphique pour plutôt placer un frame qui contiendra un widget temporaire
     def swap_screen(self):
@@ -174,3 +210,13 @@ class GraphiqueEvolution(ctk.CTkFrame):
         self.midframe.columnconfigure(0,weight=8)
         self.midframe.columnconfigure(1,weight=16)
         self.midframe.rowconfigure(0,weight=1)
+
+    #Pseudo-masque pour filtrer les données selon l'espèce ET le filtre de rayon
+    def radius_filtered(self, df:pd.DataFrame, x, y, radius):
+        #Code un peu volé à Adam dans graph-evolution mais amélioré parce que je déteste concatenate et en plus c'est plus optimisé comme ça :D
+        filt_data = pd.DataFrame(columns=df.columns)
+        for i in range(0, df.shape[0]):
+            line = df.loc[i]
+            if (getDistanceFromLatLonInKm(x, y, line["longitude"], line["latitude"]) <= radius) and line["especes"]==self.spec:
+                filt_data.loc[len(filt_data)] = line
+        return filt_data
