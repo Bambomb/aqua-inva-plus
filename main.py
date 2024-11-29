@@ -88,12 +88,24 @@ class MainApp(ctk.CTk):
         self.columnconfigure(1, weight=0)
         self.columnconfigure(2, weight=0)
 
+    #Fonction pour changer le fichier de data
+    def change_file(self):
+        new_file = tk.filedialog.askopenfilename() #File-dialog
+        #Essayer de créer le dataframe, si ça marche pas, alors le fichier est pas bon
+        try: self.data = create_dataframe(new_file)
+        except: 
+            #Popup d'erreur
+            self.addObs.popup("Erreur", "Le fichier n'est pas un fichier de données valide pour Aqua-Inva, ou contient des différences")
+            return
+        self.search_widget.reloadData() #Recharger le dataframe
+
     def create_menu(self):
         menu_bar = tk.Menu(self)
         self.config(menu=menu_bar)
         menu_bar.add_command(label="Accueil", command=self.show_accueil)
         menu_bar.add_command(label="Proportions", command=self.show_graph)
         menu_bar.add_command(label="Évolutions", command=self.show_evo)
+        menu_bar.add_command(label="Fichier", command=self.change_file)
 
     def clear_main_frame(self):
         for widget in self.winfo_children():

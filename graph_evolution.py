@@ -74,21 +74,3 @@ class GraphEvolution(CTkFrame):
         canvas.draw()
         canvas.get_tk_widget().pack(fill="both", expand=1)
 
-
-if __name__ == "__main__":
-    from dataframe import create_dataframe
-
-    app = ctk.CTk()
-    app.geometry(f"{app.winfo_screenwidth()}x{app.winfo_screenheight()}+{0}+{0}")
-    app.title("Application pêche invasive")
-    datas = create_dataframe("BD_EAE_faunique_Quebec.csv")
-
-    # from_region = GraphEvolution(datas, 1, app)
-
-    # Test graph_from_radius
-    # GraphEvolution(data=datas, center=(45.5, -73.5),radius=5, master=app)
-    #
-    # Test graph_from_region
-    # GraphEvolution(data=datas, region_id=9, master=app)
-    #
-    app.mainloop()
