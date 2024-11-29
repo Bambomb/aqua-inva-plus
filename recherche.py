@@ -4,6 +4,7 @@ import customtkinter as ctk
 import tkinter as tk
 import numpy as np
 import pandas as pd
+from photo import Photo
 
 #Classe principale 
 class SearchWidget(ctk.CTkFrame):
@@ -121,6 +122,10 @@ class SearchWidget(ctk.CTkFrame):
         self.check.grid(row=2)
         self.check.configure(state=ctk.DISABLED)
 
+        #Widget qui affiche une image de l'espèce cliquée
+        self.photo = Photo(self.master)
+        self.photo.place(x=1000, y=0)
+
     #Fonction event callback quand le checkmark est cliqué, alors l'état change
     def check_change_state(self):
         if(self.checked.get()==True): #Si le checkmark est désormais coché, il faut ajouter une marque à la ligne
@@ -193,6 +198,7 @@ class SearchWidget(ctk.CTkFrame):
 
     #Fonction qui affiche les informations détaillées du résultat cliqué dans le label
     def displayresult(self, line):
+        #Génération du texte des informations détaillées de l'observation
         self.data_index=line[9]
         tab = ""
         tab += "Date : "+ str(line[0])+ "\n"
@@ -203,9 +209,14 @@ class SearchWidget(ctk.CTkFrame):
         tab += "Nom latin : "+ str(line[6])+ "\n"
         tab += "Espèce : "+ str(line[7])
         self.displaylabel.configure(text=tab,text_color="black")
+
+        #Affichage du checkbox
         self.check.configure(state=ctk.NORMAL)
         if(str(line[8])=="Marque"):self.checked.set(True)
         else:self.checked.set(False)
+
+        #Affichage d'une image de l'espèce
+        self.photo.set_photo(line[6], line[7])
 
 
     #Fonction event callback quand on appuie sur entrée pour ajouter un filtre
