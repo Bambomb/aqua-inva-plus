@@ -150,6 +150,9 @@ class GraphiqueEvolution(ctk.CTkFrame):
         self.maplabel.pack()
         self.tempmap = PseudoCarte(None, master=self.midframe)
         self.tempmap.pack(expand=True, fill="both")
+        
+        #Ajouter un waypoint à la position donnée par l'IP
+        self.tempmap.set_waypoint(self.master.loc[1], self.master.loc[0])
 
         #Selon le mode en argument
         if(mode=="region"):

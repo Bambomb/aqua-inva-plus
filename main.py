@@ -3,6 +3,7 @@ import inspect
 
 import customtkinter as ctk
 import tkinter as tk
+import geocoder
 
 from PIL.ImageOps import expand
 
@@ -22,9 +23,11 @@ class MainApp(ctk.CTk):
         self.title("Aqua-Inva")
         self.carte = PseudoCarte(data=self.data, master=self)
         self.graph = None
+        self.loc = geocoder.ip('me').latlng
         self.create_menu()
         self.show_accueil()
         self.rowconfigure(0, weight=1)
+
 
     def show_accueil(self):
         self.clear_main_frame()
@@ -37,6 +40,9 @@ class MainApp(ctk.CTk):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=5)
         self.columnconfigure(2, weight=0)
+
+        #Ajouter un waypoint à la position donnée par l'IP
+        self.carte.set_waypoint(self.loc[1], self.loc[0])
 
     def show_graph(self):
         self.clear_main_frame()
