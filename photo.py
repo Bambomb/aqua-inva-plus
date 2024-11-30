@@ -23,6 +23,10 @@ class Photo(ctk.CTkFrame):
 
     #Définit la photo qui à afficher
     def set_photo(self, speclat:str, specfr:str):
+
+        #Afficher un texte de chargement
+        self.photo.configure(text="Chargement...", image=ctk.CTkImage(light_image=Image.open("blanc.png"), size=(1,1)))
+
         #Les deux urls permmetant la recherche
         srch_urls = [
         f"https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=pageimages&generator=search&gsrsearch={speclat}&gsrlimit=1&pithumbsize=500",
@@ -38,7 +42,7 @@ class Photo(ctk.CTkFrame):
 
             #Aller chercher les pages des résultats de recherche
             pages = data.get('query', {}).get('pages', {})
-            print(pages)
+
             #Si la requête de la recherche a échoué, vider le label
             if(not pages or len(pages)<1):self.photo.configure(text="", image=ctk.CTkImage(light_image=Image.open("blanc.png"), size=(1,1)))
             else: #Sinon, si elle a fonctionné
