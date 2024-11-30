@@ -12,8 +12,8 @@ NavigationToolbar2Tk)
 
 from pseudo_carte import PseudoCarte
 from recherche import SearchWidget
-
 from fonction import getDistanceFromLatLonInKm
+from photo import Photo
 
 #Classe principale
 class GraphiqueEvolution(ctk.CTkFrame):
@@ -116,6 +116,12 @@ class GraphiqueEvolution(ctk.CTkFrame):
         txt += "Espèce : "+ str(self.ex_line["nom_commun"])
         self.info_label.configure(text=txt, bg_color="white")
         self.info_label.place(x=0, y=20)
+
+        #Photo de l'espèce
+        self.photo = Photo(self)
+        self.photo.place(x=0, y=100)
+        self.photo.set_photo(self.ex_line["especes"], self.ex_line["nom_commun"], size=0.3)
+        self.photo.configure(width=100, height=100)
 
         #Frame pour les boutons pour ajouter des filtres
         self.addfilterframe = ctk.CTkFrame(self, width=150, bg_color="white", fg_color="white")

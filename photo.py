@@ -22,7 +22,7 @@ class Photo(ctk.CTkFrame):
         self.image = None
 
     #Définit la photo qui à afficher
-    def set_photo(self, speclat:str, specfr:str):
+    def set_photo(self, speclat:str, specfr:str, size):
 
         #Afficher un texte de chargement
         self.photo.configure(text="Chargement...", image=ctk.CTkImage(light_image=Image.open("blanc.png"), size=(1,1)))
@@ -61,7 +61,7 @@ class Photo(ctk.CTkFrame):
                             
                             img_data = Image.open(BytesIO(response.content)) #Ouverture de l'url de l'image
                             
-                            image = ctk.CTkImage(img_data, size=(img_data.width//2.5, img_data.height//2.5)) #Création de l'image
+                            image = ctk.CTkImage(img_data, size=(img_data.width//(1/size), img_data.height//(1/size))) #Création de l'image
                             self.image=image #Pour ne pas oublier l'image
                             self.photo.configure(image=image, text="") #Plaçage de l'image dans le label
                             return

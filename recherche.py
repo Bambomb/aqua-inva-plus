@@ -216,7 +216,7 @@ class SearchWidget(ctk.CTkFrame):
         else:self.checked.set(False)
 
         #Affichage d'une image de l'espèce
-        self.photo.set_photo(line[6], line[7])
+        self.photo.set_photo(line[6], line[7], size=0.4)
 
 
     #Fonction event callback quand on appuie sur entrée pour ajouter un filtre
