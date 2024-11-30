@@ -24,7 +24,10 @@ class Photo(ctk.CTkFrame):
     #Définit la photo qui à afficher
     def set_photo(self, speclat:str, specfr:str):
         #Les deux urls permmetant la recherche
-        srch_urls = [f"https://commons.wikimedia.org/w/api.php?action=opensearch&format=json&prop=imageinfo&titles={speclat}&iiprop=url", f"https://commons.wikimedia.org/w/api.php?action=opensearch&format=json&prop=imageinfo&titles={specfr}&iiprop=url"]
+        srch_urls = [
+        f"https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=pageimages&generator=search&gsrsearch={speclat}&gsrlimit=1&pithumbsize=500",
+        f"https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=pageimages&generator=search&gsrsearch={specfr}&gsrlimit=1&pithumbsize=500"
+        ]
 
         #Pour chacun des deux urls
         for url in srch_urls:
@@ -35,14 +38,14 @@ class Photo(ctk.CTkFrame):
 
             #Aller chercher les pages des résultats de recherche
             pages = data.get('query', {}).get('pages', {})
-
+            print(pages)
             #Si la requête de la recherche a échoué, vider le label
             if(not pages or len(pages)<1):self.photo.configure(text="", image=ctk.CTkImage(light_image=Image.open("blanc.png"), size=(1,1)))
             else: #Sinon, si elle a fonctionné
 
                 #Pour chaque page trouvée
                 for id, page in pages.items():
-
+                    
                     #Vérifier si la page correspond bien à l'espèce
                     if('thumbnail' in page and (speclat.split(" ")[0] in page['title'] or speclat.split(" ")[1] in page['title'])):
                         img_url = page['thumbnail']['source'] #Aller chercher l'url de l'image dans le résultat de la recherche
@@ -51,7 +54,7 @@ class Photo(ctk.CTkFrame):
 
                         #Si la requête de l'image a fonctionné
                         if response.status_code == 200:
-
+                            
                             img_data = Image.open(BytesIO(response.content)) #Ouverture de l'url de l'image
                             
                             image = ctk.CTkImage(img_data, size=(img_data.width//2.5, img_data.height//2.5)) #Création de l'image
