@@ -3,7 +3,6 @@
 import customtkinter as ctk
 import tkinter as tk
 import numpy as np
-import pandas as pd
 from photo import Photo
 
 #Classe principale 
@@ -167,7 +166,8 @@ class SearchWidget(ctk.CTkFrame):
             for j, case in enumerate(result):
                  if str(self.text).upper() in str(case).upper():
                      index = j
-            reslab = ResultLabel(smalltext=result[index], bigtext = result, supermaster=self, master=self.resultats)
+            if(self.content.get().upper()!="MARQUE"): reslab = ResultLabel(smalltext=result[index], bigtext = result, supermaster=self, master=self.resultats)
+            else: reslab = ResultLabel(smalltext=result[7], bigtext = result, supermaster=self, master=self.resultats)
             self.label_collection.append(reslab)
             self.label_collection[i].pack(expand=True,side=tk.TOP)
 

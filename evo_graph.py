@@ -2,13 +2,11 @@
 
 import customtkinter as ctk
 import tkinter as tk
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 from matplotlib.figure import Figure 
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,  
-NavigationToolbar2Tk) 
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg) 
 
 from pseudo_carte import PseudoCarte
 from recherche import SearchWidget

@@ -3,7 +3,6 @@ from dbm import error
 import matplotlib.pyplot as plt
 from customtkinter import CTkFrame, CTkFont
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from pandas.core.interchange.dataframe_protocol import DataFrame
 
 from quebec_info import region_info
 

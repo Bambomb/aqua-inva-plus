@@ -2,10 +2,8 @@
 
 import requests
 import customtkinter as ctk
-import tkinter as tk
-import pyWikiCommons as wiki
 
-from PIL import Image, ImageTk
+from PIL import Image
 from io import BytesIO
 
 class Photo(ctk.CTkFrame):

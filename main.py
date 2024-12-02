@@ -1,11 +1,7 @@
 # main.py
-import inspect
-
 import customtkinter as ctk
 import tkinter as tk
 import geocoder
-
-from PIL.ImageOps import expand
 
 from recherche import SearchWidget
 from dataframe import create_dataframe
