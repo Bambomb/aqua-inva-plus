@@ -154,6 +154,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
         self.maplabel.pack()
         self.tempmap = PseudoCarte(None, master=self.midframe)
         self.tempmap.pack(expand=True, fill="both")
+        self.tempmap.here_button.configure(state=tk.DISABLED)
         
         #Ajouter un waypoint à la position donnée par l'IP
         self.tempmap.set_waypoint(self.master.loc[1], self.master.loc[0])
@@ -167,6 +168,7 @@ class GraphiqueEvolution(ctk.CTkFrame):
             self.tempmap.click_info.configure(state=tk.NORMAL)
             self.tempmap.click_region.configure(state=tk.DISABLED)
             self.tempmap.click_rayon.configure(state=tk.DISABLED)
+            
 
             self.addregionbutton.configure(command=self.add_filter_region) #Remapper le bouton
 

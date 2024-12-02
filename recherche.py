@@ -167,6 +167,7 @@ class SearchWidget(ctk.CTkFrame):
                  if str(self.text).upper() in str(case).upper():
                      index = j
             if(self.content.get().upper()!="MARQUE"): reslab = ResultLabel(smalltext=result[index], bigtext = result, supermaster=self, master=self.resultats)
+            #Si la recherche est "marque", afficher le nom des espèces dans les résultats à la place
             else: reslab = ResultLabel(smalltext=result[7], bigtext = result, supermaster=self, master=self.resultats)
             self.label_collection.append(reslab)
             self.label_collection[i].pack(expand=True,side=tk.TOP)

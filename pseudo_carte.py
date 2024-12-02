@@ -120,6 +120,15 @@ class PseudoCarte(ctk.CTkFrame):
         self.canvas.bind("<B1-Motion>", self.begin_drag)
         self.canvas.bind("<ButtonRelease-1>", self.end_drag)
 
+        #Bouton pour afficher un graphique de proportions correspondant au rayon environnant
+        self.here_button = ctk.CTkButton(self.click_frame, text="Autour de moi", command=lambda: self.graph_here(self.master.loc))
+        self.here_button.grid(row=4, pady=5)
+
+    #Afficher un graphique de proportions correspondant au rayon environnant
+    def graph_here(self, pos):
+        self.graph = partial(GraphEvolution, data=self.data, center=(pos[1], pos[0]), radius=self.click_rayon_radius.get())
+        self.master.show_graph()
+
     def begin_drag(self, event):
         self.canvas.unbind("<B1-Motion>")
         self.canvas.bind("<B1-Motion>", self.drag)
